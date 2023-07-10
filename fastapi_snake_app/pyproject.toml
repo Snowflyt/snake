@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "fastapi-snake-app"
+version = "0.1.0"
+description = ""
+authors = ["Snowflyt <gaoge011022@163.com>"]
+readme = "README.md"
+packages = [{ include = "fastapi_snake_app" }]
+
+[[tool.poetry.source]]
+name = "tsinghua"
+priority = "default"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.95.0"
+uvicorn = "^0.21.1"
+numpy = "^1.24.3"
+pandas = "^2.0.1"
+websockets = "^11.0.3"
+
+[tool.poetry.scripts]
+start = "fastapi_snake_app.main:start"
+
+[tool.poetry.group.dev.dependencies]
+pandas-stubs = "^2.0.1.230501"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
