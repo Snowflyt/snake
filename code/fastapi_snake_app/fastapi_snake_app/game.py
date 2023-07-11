@@ -76,6 +76,8 @@ class Snake:  ##定义贪吃蛇类
                 dead = True
                 break
         return dead
+
+
 @app.get('/echo')
 async def echo(text: str) -> str:
     return text
