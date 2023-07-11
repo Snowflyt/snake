@@ -6,6 +6,13 @@ FastAPI 的文档可参考 [FastAPI 中文文档](https://fastapi.tiangolo.com/z
 
 主要代码在 `fastapi_snake_app/game.py` 中，其余代码为 FastAPI 框架的配置。
 
+## 软件架构
+
+- 语言: Python
+- 主要使用框架: FastAPI
+- 包管理器: Poetry
+- 其他: Pylint
+
 ## 安装
 
 建议使用依赖管理工具 Poetry 安装依赖，这也是开发所使用的工具。
