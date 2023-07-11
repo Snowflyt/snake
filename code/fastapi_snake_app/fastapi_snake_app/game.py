@@ -149,6 +149,8 @@ def game_judgement(snake1: Snake, snake2: Snake):
         return 0
 
 
+
+
 @app.get('/echo')
 async def echo(text: str) -> str:
     return text
