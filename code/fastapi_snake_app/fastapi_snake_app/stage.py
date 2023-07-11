@@ -6,14 +6,14 @@ from fastapi_snake_app.main import app
 
 
 @app.get('/stages')
-async def read_notes() -> list[Stage]:
+async def read_stages() -> list[Stage]:
     with Session(engine) as session:
         stages = session.exec(select(Stage)).all()
         return stages
 
 
 @app.post('/stage')
-async def create_note(stage: Stage):
+async def create_stage(stage: Stage):
     with Session(engine) as session:
         session.add(stage)
         session.commit()
