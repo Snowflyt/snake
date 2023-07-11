@@ -62,7 +62,7 @@ class Snake:##定义贪吃蛇类
         if head.col < 0 or head.row < 0 or head.row > self.playground_height or head.col > self.plauground_width:
             dead = True
         return dead
-    def hit_body_check(self):##检测有没有撞到自己
+    def hit_body_check(self):##检测是否撞到自己
         dead = False
         head = self.head.copy()
         for snake_body_points in self.snake_body[1:]:##注意排除第0个元素 即蛇头自身
