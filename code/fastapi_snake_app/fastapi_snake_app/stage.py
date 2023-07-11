@@ -12,7 +12,7 @@ async def read_notes() -> list[Stage]:
         return stages
 
 
-@app.post('/user')
+@app.post('/stage')
 async def create_note(stage: Stage):
     with Session(engine) as session:
         session.add(stage)

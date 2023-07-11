@@ -6,4 +6,3 @@ class Stage(SQLModel, table=True):
     sname: str = Field(default=id, nullable=False, unique=True)
     isLocked: bool=Field(default=False,nullable=False)
     unlockPreconditionStars: int=Field(nullable=False)
-    starsAlreadyGet: int=Field(max_items=3,min_items=0,nullable=False)
