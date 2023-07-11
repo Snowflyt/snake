@@ -25,6 +25,30 @@ const buildURL = (url: string | URL, params?: Record<string, string>): URL => {
   return urlObject;
 };
 
+type RequestOptions = Omit<RequestInit, 'method'> & {
+  params?: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any;
+};
+
+const _request = async <R = unknown>(
+  url: string | URL,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  options?: RequestOptions,
+): Promise<R> => {
+  const response = await fetch(buildURL(url, options?.params), {
+    ...options,
+    method,
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  return await response.json();
+};
+
 /**
  * 对 fetch API 进行简单封装
  */
@@ -37,19 +61,9 @@ export const request = {
    */
   async get<R = unknown>(
     url: string | URL,
-    options?: Omit<RequestInit, 'method'> & { params?: Record<string, string> },
+    options?: RequestOptions,
   ): Promise<R> {
-    const response = await fetch(buildURL(url, options?.params), {
-      ...options,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return await response.json();
+    return await _request(url, 'GET', options);
   },
 
   /**
@@ -60,19 +74,9 @@ export const request = {
    */
   async delete<R = unknown>(
     url: string | URL,
-    options?: Omit<RequestInit, 'method'> & { params?: Record<string, string> },
+    options?: RequestOptions,
   ): Promise<R> {
-    const response = await fetch(buildURL(url, options?.params), {
-      ...options,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return await response.json();
+    return await _request(url, 'DELETE', options);
   },
 
   /**
@@ -81,28 +85,8 @@ export const request = {
    * @param options
    * @returns
    */
-  async post<R = unknown>(
-    url: string,
-    options?: Omit<RequestInit, 'method'> & {
-      params?: Record<string, string>;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data?: any;
-    },
-  ): Promise<R> {
-    const response = await fetch(buildURL(url, options?.params), {
-      ...options,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      ...(options?.data !== undefined
-        ? { body: JSON.stringify(options.data) }
-        : {}),
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return await response.json();
+  async post<R = unknown>(url: string, options?: RequestOptions): Promise<R> {
+    return await _request(url, 'POST', options);
   },
 
   /**
@@ -111,28 +95,8 @@ export const request = {
    * @param options
    * @returns
    */
-  async put<R = unknown>(
-    url: string,
-    options?: Omit<RequestInit, 'method'> & {
-      params?: Record<string, string>;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data?: any;
-    },
-  ): Promise<R> {
-    const response = await fetch(buildURL(url, options?.params), {
-      ...options,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      ...(options?.data !== undefined
-        ? { body: JSON.stringify(options.data) }
-        : {}),
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return await response.json();
+  async put<R = unknown>(url: string, options?: RequestOptions): Promise<R> {
+    return await _request(url, 'PUT', options);
   },
 
   /**
@@ -141,27 +105,7 @@ export const request = {
    * @param options
    * @returns
    */
-  async patch<R = unknown>(
-    url: string,
-    options?: Omit<RequestInit, 'method'> & {
-      params?: Record<string, string>;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data?: any;
-    },
-  ): Promise<R> {
-    const response = await fetch(buildURL(url, options?.params), {
-      ...options,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      ...(options?.data !== undefined
-        ? { body: JSON.stringify(options.data) }
-        : {}),
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return await response.json();
+  async patch<R = unknown>(url: string, options?: RequestOptions): Promise<R> {
+    return await _request(url, 'PATCH', options);
   },
 };
