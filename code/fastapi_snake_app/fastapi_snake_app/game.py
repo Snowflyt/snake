@@ -119,7 +119,7 @@ def hit_snake_check(snake1: Snake, snake2: Snake):
             break
 
 
-def game_judgement(snake1: Snake, snake2: Snake):
+def game_judgement(snake1: Snake, snake2: Snake):  # 首先检测两个蛇是否撞墙，是否撞到自己身体，更新dead状态，然后检测是否撞到别的蛇，更新状态
     """
     4个int返回值，
     0：没有胜负发生
