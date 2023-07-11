@@ -5,7 +5,7 @@ import 'element-plus/lib/locale/lang/zh-cn';
 import sampleApi from './apis/sample';
 import GameBoard from './components/GameBoard';
 import Layout from './components/Layout';
-
+import login from './pages/login';
 const roomId = ref('');
 
 onMounted(async () => {
@@ -23,4 +23,6 @@ onMounted(async () => {
     </div>
     <game-board />
   </layout>
+  <login />
+
 </template>
