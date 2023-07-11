@@ -4,3 +4,5 @@ disable=
     missing-class-docstring,
     missing-function-docstring,
     missing-module-docstring,
+    no-name-in-module,
+    too-few-public-methods,

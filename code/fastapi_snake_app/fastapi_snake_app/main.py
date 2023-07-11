@@ -8,7 +8,9 @@ from fastapi.responses import HTMLResponse
 
 app = FastAPI(redoc_url=None)
 
+importlib.import_module('fastapi_snake_app.db')
 importlib.import_module('fastapi_snake_app.game')
+importlib.import_module('fastapi_snake_app.note')
 
 # Allow CORS
 app.add_middleware(
