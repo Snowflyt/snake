@@ -1,21 +1,7 @@
-from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String, Boolean, Table
-
-from fastapi_snake_app.db import metadata
-
-notes = Table('notes',
-              metadata,
-              Column('id', Integer, primary_key=True),
-              Column('text', String),
-              Column('completed', Boolean))
+from sqlmodel import Field, SQLModel  # type: ignore
 
 
-class NoteIn(BaseModel):
-    text: str
-    completed: bool
-
-
-class Note(BaseModel):
-    id: int
+class Note(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     text: str
     completed: bool
