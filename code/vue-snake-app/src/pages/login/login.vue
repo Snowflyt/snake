@@ -1,6 +1,6 @@
 <template>
   <div id="base" class="">
-    <image class="" src="../../assets/images/登录/u1.svg" />
+    <img class="" src="../../assets/images/登录/u1.svg" />
     <el-tabs class="">
       <el-tab-pane label="密码登录">
         <el-form class="" label-width="120px">

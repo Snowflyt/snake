@@ -6,6 +6,10 @@ import sampleApi from './apis/sample';
 import GameBoard from './components/GameBoard';
 import Layout from './components/Layout';
 import login from './pages/login';
+import register from './pages/register';
+import chat from './pages/chat';
+import home from './pages/home';
+
 const roomId = ref('');
 
 onMounted(async () => {
@@ -24,5 +28,7 @@ onMounted(async () => {
     <game-board />
   </layout>
   <login />
-
+  <register />
+  <chat />
+  <home />
 </template>
