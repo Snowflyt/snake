@@ -13,8 +13,8 @@ FROM python-base as poetry-base
 
 # Creating a virtual environment just for poetry and install it with pip
 RUN python3 -m venv $POETRY_VENV \
-    && $POETRY_VENV/bin/pip install -U pip setuptools \
-    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+    && $POETRY_VENV/bin/pip install -U pip setuptools -i https://pypi.tuna.tsinghua.edu.cn/simple/ \
+    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION} -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
 # Create a new stage from the base python image
 FROM python-base as example-app
