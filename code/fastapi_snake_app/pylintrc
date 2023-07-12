@@ -1,5 +1,6 @@
 [MESSAGES CONTROL]
 disable=
+    broad-exception-caught,
     import-error,
     missing-class-docstring,
     missing-function-docstring,

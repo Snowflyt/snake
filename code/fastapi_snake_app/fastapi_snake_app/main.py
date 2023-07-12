@@ -29,13 +29,21 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+with open('./fastapi_snake_app/game.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+
+@app.get('/', include_in_schema=False)
+async def index() -> HTMLResponse:
+    return HTMLResponse(html)
+
 
 def start() -> None:
     """
     Launched with `poetry run start` at root level.
     """
 
-    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='127.0.0.1')  # type: ignore
+    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='0.0.0.0')  # type: ignore
 
 
 def get_redoc_html(
