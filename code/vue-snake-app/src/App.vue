@@ -9,6 +9,9 @@ import login from './pages/login';
 import register from './pages/register';
 import chat from './pages/chat';
 import home from './pages/home';
+import setting from './pages/setting'
+import shop from './pages/shop/shop.vue';
+import leisure from './pages/leisure'
 
 const roomId = ref('');
 
@@ -31,4 +34,7 @@ onMounted(async () => {
   <register />
   <chat />
   <home />
+  <setting />
+  <shop />
+  <leisure />
 </template>
