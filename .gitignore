@@ -1,0 +1,12 @@
+# Editor directories and files
+.vscode/*
+.idea
+.spyderproject
+.spyproject
+.ropeproject
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

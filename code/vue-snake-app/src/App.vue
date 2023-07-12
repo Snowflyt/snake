@@ -8,6 +8,10 @@ import Layout from './components/Layout';
 import UserCenter from './pages/UserCenter';
 import combat from './pages/combat';
 import login from './pages/login';
+import register from './pages/register';
+import chat from './pages/chat';
+import home from './pages/home';
+
 const roomId = ref('');
 
 onMounted(async () => {
@@ -24,7 +28,15 @@ onMounted(async () => {
       </el-form-item>
     </div>
     <game-board />
+<<<<<<< HEAD
   </layout> -->
 
   <combat />
+=======
+  </layout>
+  <login />
+  <register />
+  <chat />
+  <home />
+>>>>>>> e11e971cb5b2e7100d9fb58eaef9535aceafc106
 </template>

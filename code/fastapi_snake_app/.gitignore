@@ -82,3 +82,7 @@ cython_debug/
 *.njsproj
 *.sln
 *.sw?
+
+
+# SQLite
+fastapi_snake_app/db/db.sqlite

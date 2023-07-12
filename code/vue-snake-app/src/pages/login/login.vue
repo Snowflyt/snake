@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div
     class="relative top-[10%] flex h-[10%] content-center items-center justify-center">
     <p class="text-5xl">登录界面</p>
@@ -7,6 +8,11 @@
     class="flex h-[90%] w-[100%] flex-wrap content-center items-center justify-center">
     <img class="grow-1 w-[20%]" src="../../assets/images/登录/u1.svg" />
     <el-tabs class="grow-6 flex w-[40%] flex-wrap">
+=======
+  <div id="base" class="">
+    <img class="" src="../../assets/images/登录/u1.svg" />
+    <el-tabs class="">
+>>>>>>> e11e971cb5b2e7100d9fb58eaef9535aceafc106
       <el-tab-pane label="密码登录">
         <el-form>
           <el-form-item class="" label="用户名">
