@@ -30,12 +30,12 @@ app.add_middleware(
 )
 
 with open('./fastapi_snake_app/game.html', 'r', encoding='utf-8') as f:
-    html = f.read()
+    demo_html = f.read()
 
 
 @app.get('/', include_in_schema=False)
 async def index() -> HTMLResponse:
-    return HTMLResponse(html)
+    return HTMLResponse(demo_html)
 
 
 def start() -> None:

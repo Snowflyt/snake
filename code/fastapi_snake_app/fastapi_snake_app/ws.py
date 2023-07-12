@@ -1,6 +1,7 @@
 import asyncio
+import random
 import time
-from typing import Literal, TypeAlias, TypedDict
+from typing import Literal, TypeAlias, TypedDict, Protocol
 from dataclasses import dataclass
 
 from fastapi import WebSocket
@@ -64,20 +65,47 @@ class Board:
         return BoardDto(height=self.height, width=self.width)
 
 
+class PlayerDto(TypedDict):
+    id: str
+    name: str
+
+
+@dataclass
+class Player:
+    id: str  # pylint: disable=invalid-name
+    name: str
+
+    def to_dto(self) -> PlayerDto:
+        return {'id': self.id, 'name': self.name}
+
+
 class SnakeDto(TypedDict):
     body_points: list[PointDto]
-    user_id: int
+    player: PlayerDto
+
+
+@dataclass
+class SnakeInfo:
+    body_points: list[Point]
+    head: Point
+    direction: Direction
+    player: Player
+
+
+class StepFunc(Protocol):
+    def __call__(self, snake: SnakeInfo, other_snakes: list[SnakeInfo], board: Board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+        ...
 
 
 DEFAULT_SNAKE_CODE = '''
-def step(snake, other_snakes, board):
-    pass
+def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+    return 'KEEP_STRAIGHT'
 '''
 
 
 class Snake:
     def __init__(self, *, body_nodes: list[Point], color: Color = RGB(0, 0, 0),
-                 board: Board, user_id: int, code: str = DEFAULT_SNAKE_CODE) -> None:
+                 board: Board, player: Player, code: str = DEFAULT_SNAKE_CODE) -> None:
         """
         :param body_nodes: 蛇身节点，蛇头为第一个节点
         :param color: 蛇身颜色
@@ -87,7 +115,7 @@ class Snake:
 
         self._color = color
         self._board = board
-        self._user_id = user_id
+        self._player = player
         self._code = code
 
         if len(body_nodes) < 2:
@@ -144,8 +172,26 @@ class Snake:
         return self._color
 
     @property
-    def user_id(self) -> int:
-        return self._user_id
+    def code(self) -> str:
+        return self._code
+
+    def update_code(self, code: str) -> None:
+        try:
+            step_func = self.__parse_step_func(code)
+            action = step_func(snake=self.to_info(),
+                               other_snakes=[],
+                               board=self._board)
+            if action not in ('TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'):
+                raise ValueError('Invalid code')
+            self._code = code
+            print(f'Player(id="{self.player.id}", name="{self.player.name}"): Code updated')
+            print(self._code)
+        except Exception:
+            return
+
+    @property
+    def player(self) -> Player:
+        return self._player
 
     @property
     def head(self) -> Point:
@@ -159,7 +205,7 @@ class Snake:
     def direction(self) -> Direction:
         return self._direction
 
-    def turn_left(self) -> None:
+    def _turn_left(self) -> None:
         if self._direction == 'up':
             self._direction = 'left'
         elif self._direction == 'left':
@@ -169,7 +215,7 @@ class Snake:
         else:
             self._direction = 'up'
 
-    def turn_right(self) -> None:
+    def _turn_right(self) -> None:
         if self._direction == 'up':
             self._direction = 'right'
         elif self._direction == 'right':
@@ -179,12 +225,27 @@ class Snake:
         else:
             self._direction = 'up'
 
-    def forward(self, other_snakes: list['Snake']) -> None:
-        globals_ = {}
+    @staticmethod
+    def __parse_step_func(code: str) -> StepFunc:
+        globals_ = {
+            'Literal': Literal,
+        }
         locals_ = {}
-        exec(self._code, globals_, locals_)
-        step_func = locals_['step']
-        step_func(self, other_snakes, self._board)
+        exec(code, globals_, locals_)  # pylint: disable=exec-used
+        return locals_['step']
+
+    def forward(self, other_snakes: list['Snake']) -> None:
+        step_func = self.__parse_step_func(self._code)
+
+        action: Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'] = step_func(
+            snake=self.to_info(),
+            other_snakes=[snake.to_info() for snake in other_snakes],
+            board=self._board)
+
+        if action == 'TURN_LEFT':
+            self._turn_left()
+        elif action == 'TURN_RIGHT':
+            self._turn_right()
 
         if self._direction == 'up':
             self._body_points.insert(0, Point(self.head.x, self.head.y - 1))
@@ -199,13 +260,18 @@ class Snake:
 
     def to_dto(self) -> SnakeDto:
         return {
-            'body_points': [point.to_dto() for point in self.body_points],
-            'user_id': self.user_id,
+            'body_points': [point.to_dto() for point in self._body_points],
+            'player': self._player.to_dto()
         }
+
+    def to_info(self) -> SnakeInfo:
+        return SnakeInfo(body_points=self._body_points,
+                         head=self.head,
+                         direction=self._direction,
+                         player=self._player)
 
 
 class GameDto(TypedDict):
-    room_id: str
     snakes: list[SnakeDto]
     board: BoardDto
     round: int
@@ -213,14 +279,12 @@ class GameDto(TypedDict):
 
 @dataclass
 class Game:
-    room_id: str
     snakes: list[Snake]
     board: Board
-    round: int = 0
+    round: int = 1
 
     def to_dto(self) -> GameDto:
         return {
-            'room_id': self.room_id,
             'snakes': [snake.to_dto() for snake in self.snakes],
             'board': self.board.to_dto(),
             'round': self.round
@@ -231,28 +295,57 @@ games: dict[str, Game] = {}
 
 
 @dataclass
-class CreateGameInput:
+class StartGameInput:
     room_id: str
-    user_ids: list[int]
+    player: Player
+
+
+BOARD_WIDTH = 50
+BOARD_HEIGHT = 50
 
 
 @app.post('/game')
-def start_game(ipt: CreateGameInput) -> GameDto:
-    board = Board(width=50, height=50)
-    snake_gap = board.width // (len(ipt.user_ids) + 1)
-    snakes = [Snake(body_nodes=[Point((idx + 1) * snake_gap, 10),
-                                Point((idx + 1) * snake_gap, 40)],
-                    board=board, user_id=user_id)
-              for idx, user_id in enumerate(ipt.user_ids)]
+def start_game(ipt: StartGameInput) -> GameDto:
+    def generate_snake_head_and_after_head() -> tuple[Point, Point]:
+        head = Point(random.randint(3, BOARD_WIDTH - 3),
+                     random.randint(3, BOARD_HEIGHT - 3))
+        after_head = [Point(head.x, head.y + 1),
+                      Point(head.x, head.y - 1),
+                      Point(head.x + 1, head.y),
+                      Point(head.x - 1, head.y)][random.randint(0, 3)]
+        return head, after_head
 
-    game = Game(room_id=ipt.room_id, snakes=snakes,
-                board=board, round=0)
-    games[ipt.room_id] = game
+    head, after_head = generate_snake_head_and_after_head()
+
+    if ipt.room_id not in games:
+        board = Board(width=BOARD_WIDTH, height=BOARD_HEIGHT)
+        snakes = [Snake(body_nodes=[head, after_head],
+                        board=board, player=ipt.player)]
+        game = Game(snakes=snakes, board=board, round=1)
+        games[ipt.room_id] = game
+    else:
+        game = games[ipt.room_id]
+        while any(head in snake.body_points or after_head in snake.body_points
+                  for snake in game.snakes):
+            head, after_head = generate_snake_head_and_after_head()
+        game.snakes.append(Snake(body_nodes=[head, after_head],
+                                 board=game.board, player=ipt.player))
 
     return game.to_dto()
 
 
+@app.delete('/game/{room_id}')
+def end_game(room_id: str, player_id: str) -> None:
+    if room_id in games:
+        games[room_id].snakes = list(
+            filter(lambda snake: snake.player.id != player_id,
+                   games[room_id].snakes))
+        if games[room_id].snakes == []:
+            del games[room_id]
+
+
 class UpdateCodePayload(TypedDict):
+    player_id: int
     code: str
 
 
@@ -276,16 +369,25 @@ class UpdateGameMessage(TypedDict):
 OutgoingMessage: TypeAlias = UpdateGameMessage
 
 
-async def update_code(payload: UpdateCodePayload) -> None:
-    ...
+async def update_code(room_id: str, payload: UpdateCodePayload) -> None:
+    player_id, code = payload['player_id'], payload['code']
+
+    game = games[room_id]
+    for snake in game.snakes:
+        if snake.player.id == player_id:
+            snake.update_code(code)
+            break
 
 
-async def update_game(payload: UpdateGamePayload) -> None:
-    ...
+async def update_game(game: Game) -> None:
+    for snake in game.snakes:
+        other_snakes = filter(lambda s: s != snake,  # pylint: disable=cell-var-from-loop
+                              game.snakes)
+        snake.forward(other_snakes=list(other_snakes))
 
 
-@app.websocket('/ws')
-async def websocket_endpoint(websocket: WebSocket) -> None:
+@app.websocket('/game/{room_id}')
+async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
     await websocket.accept()
 
     last_time = time.time()
@@ -295,31 +397,28 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
             msg: IncomingMessage = await websocket.receive_json()
             if msg:
                 if msg['type'] == 'update-code':
-                    await update_code(msg['payload'])
+                    await update_code(room_id=room_id, payload=msg['payload'])
 
     receiver_task = asyncio.create_task(receive_handle())
 
     try:
         while True:
             # Send updates periodically
-            if time.time() - last_time > 1:
+            if time.time() - last_time > 0.5:
                 last_time = time.time()
 
-                for game in games.values():
-                    for snake in game.snakes:
-                        other_snakes = filter(
-                            lambda s: s != snake, game.snakes)
-                        snake.forward(other_snakes=list(other_snakes))
+                game = games[room_id]
+                await update_game(game)
 
-                    await websocket.send_json(UpdateGameMessage(
-                        type='update-game',
-                        payload=UpdateGamePayload(game=game.to_dto())))
+                await websocket.send_json(UpdateGameMessage(
+                    type='update-game',
+                    payload=UpdateGamePayload(game=game.to_dto())))
             else:
                 # Sleep a bit to prevent high CPU usage
                 await asyncio.sleep(0.1)
 
     except Exception as exc:
-        print(f"Error in websocket communication: {exc}")
+        print(f'Error in websocket communication: {exc}')
 
     finally:
         receiver_task.cancel()  # Stop the receiver task when exit
