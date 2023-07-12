@@ -3,10 +3,10 @@
     class="absolute flex h-[100%] w-[100%] flex-wrap content-center items-center justify-center border-2 border-black">
     <el-container class="h-[100%]">
       <el-header class="h-[30%]">
-        <div class="w-100 flex flex-row justify-between">
+        <div class="w-100 flex h-[30%] flex-row justify-between">
           <img
             id="u226_img"
-            class="inline"
+            class="inline h-[80%]"
             src="../../assets/images/对战/u226.svg" />
 
           <img
@@ -15,12 +15,20 @@
             src="../../assets/images/对战/u227.svg" />
         </div>
         <div class="w-100 flex flex-row justify-between">
-          <b>返回</b>
-          <b>设置</b>
+          <button
+            class="text-2xl font-bold"
+            @click="
+              () => {
+                $router.push('/userCenter');
+              }
+            ">
+            返回
+          </button>
+          <button class="text-2xl font-bold">设置</button>
         </div>
-        <div class="w-100 flex flex-row justify-center">
-          <b>房间号:</b>
-          <input v-model="RoomID" />
+        <div class="w-100 flex h-[30%] flex-row justify-center">
+          <b class="text-5xl font-bold">房间号:</b>
+          <input v-model="RoomID" class="border-2 border-black" type="text" />
         </div>
       </el-header>
       <el-main class="h-[60%] bg-slate-300">

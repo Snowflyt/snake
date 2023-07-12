@@ -11,8 +11,13 @@
       src="../../assets/images/个人中心/u178.svg" />
   </div>
   <div class="w-100 flex flex-row justify-between">
-    <router-link to="/login">返回</router-link>
-    <b>设置</b>
+    <button class="text-2xl font-bold" @click="$router.push('/login')">
+      返回
+    </button>
+    <button class="text-2xl font-bold">设置</button>
+  </div>
+  <div class="flex justify-center">
+    <p class="text-6xl font-bold">个人信息修改</p>
   </div>
   <div class="relative h-[60%]">
     <img
@@ -31,6 +36,17 @@
       </el-form-item>
       <el-form-item label="个人简介">
         <el-input v-model="PersonalInfo" />
+      </el-form-item>
+      <el-form-item>
+        <button
+          class="rounded border-2 border-black p-2 text-3xl font-bold"
+          @click="
+            () => {
+              $router.push('/combat');
+            }
+          ">
+          提交修改
+        </button>
       </el-form-item>
     </el-form>
   </div>

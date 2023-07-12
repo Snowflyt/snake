@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import UserCenter from '../pages/UserCenter';
-import combat from '../pages/combat';
-import login from '../pages/login';
+import Combat from '../pages/combat';
+import Login from '../pages/login';
 
-const routes = [
-  { path: '/login', component: login },
-  { path: './combat', component: combat },
-  { path: './UserCenter', component: UserCenter },
+import type { RouteRecordRaw } from 'vue-router';
+
+const routes: RouteRecordRaw[] = [
+  { path: '/login', component: Login },
+  { path: '/combat', component: Combat },
+  { path: '/userCenter', component: UserCenter },
 ];
 
-const router = new createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 });
