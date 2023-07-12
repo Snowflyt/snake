@@ -1,10 +1,8 @@
 <template>
-  <div
-    class="relative top-[10%] flex h-[10%] content-center items-center justify-center">
+  <div class="relative top-[10%] flex h-[10%] content-center items-center justify-center">
     <p class="text-5xl font-bold">登录界面</p>
   </div>
-  <div
-    class="flex h-[90%] w-[100%] flex-wrap content-center items-center justify-center">
+  <div class="flex h-[90%] w-[100%] flex-wrap content-center items-center justify-center">
     <img class="grow-1 w-[20%]" src="../../assets/images/登录/u1.svg" />
     <el-tabs class="grow-6 flex w-[40%] flex-wrap">
       <el-tab-pane label="密码登录">
@@ -17,14 +15,9 @@
           </el-form-item>
           <el-form-item>
             <div class="flex justify-center">
-              <button
-                class="font-blod rounded border-2 border-black p-2 text-3xl"
-                type="primary"
-                round
-                @click="
-                  () => {
-                    $router.push('/userCenter');
-                  }
+              <button class="font-blod rounded border-2 border-black p-2 text-3xl" type="primary" round @click="() => {
+                $router.push('/userCenter');
+              }
                 ">
                 登录
               </button>
@@ -41,14 +34,9 @@
             <el-input v-model="VerifyCode" />
           </el-form-item>
           <el-form-item>
-            <button
-              class="font-blod rounded border-2 border-black p-2 text-3xl"
-              type="primary"
-              round
-              @click="
-                () => {
-                  $router.push('/userCenter');
-                }
+            <button class="font-blod rounded border-2 border-black p-2 text-3xl" type="primary" round @click="() => {
+              $router.push('/userCenter');
+            }
               ">
               登录
             </button>
@@ -58,12 +46,9 @@
       <el-tab-pane label="扫码登录">
         <div class="relative">
           <img class="inline w-[50%]" src="../../assets/tdimensioncode.png" />
-          <button
-            class="font-blod absolute top-[50%] inline h-[50%] rounded border-2 border-black p-2 text-3xl"
-            @click="
-              () => {
-                $router.push('/userCenter');
-              }
+          <button class="font-blod absolute top-[50%] inline h-[50%] rounded border-2 border-black p-2 text-3xl" @click="() => {
+            $router.push('/userCenter');
+          }
             ">
             登录
           </button>

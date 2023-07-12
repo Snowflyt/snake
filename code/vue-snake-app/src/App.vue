@@ -9,10 +9,12 @@ import Layout from './components/Layout';
 import UserCenter from './pages/UserCenter';
 import chat from './pages/chat';
 import combat from './pages/combat';
+import register from './pages/register'
 import home from './pages/home';
 import setting from './pages/setting'
 import shop from './pages/shop/shop.vue';
 import leisure from './pages/leisure'
+import battle from './pages/battle'
 
 const roomId = ref('');
 </script>
@@ -28,4 +30,5 @@ const roomId = ref('');
   <setting />
   <shop />
   <leisure />
+  <battle />
 </template>
