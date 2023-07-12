@@ -11,6 +11,9 @@ app = FastAPI(redoc_url=None)
 importlib.import_module('fastapi_snake_app.db')
 importlib.import_module('fastapi_snake_app.ws')
 importlib.import_module('fastapi_snake_app.game')
+importlib.import_module('fastapi_snake_app.user')
+importlib.import_module('fastapi_snake_app.stage')
+importlib.import_module('fastapi_snake_app.play')
 
 # Import all routes
 importlib.import_module('fastapi_snake_app.note')
