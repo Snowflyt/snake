@@ -76,23 +76,3 @@ class Snake:  ##定义贪吃蛇类
                 dead = True
                 break
         return dead
-
-
-@app.get('/echo')
-async def echo(text: str) -> str:
-    return text
-
-
-@app.post('/start-game')
-async def start_game(room_id: str) -> None:
-    game = ...
-    games[room_id] = game
-
-
-@app.websocket('/ws')
-async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-
-        await websocket.send_text(f'Message text was: {data}')
