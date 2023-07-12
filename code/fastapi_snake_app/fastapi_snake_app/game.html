@@ -1,34 +1,308 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Chat</title>
-  </head>
-  <body>
-    <h1>WebSocket Chat</h1>
-    <form action="" onsubmit="sendMessage(event)">
-      <input type="text" id="messageText" autocomplete="off" />
-      <button>Send</button>
-    </form>
-    <ul id="messages"></ul>
-    <script>
-      const ws = new WebSocket("ws://0.0.0.0:8000/ws");
-      ws.onmessage = (event) => {
-        const { type, payload } = JSON.parse(event.data);
-        console.log(type);
-        console.log(payload);
-
-        // const messages = document.getElementById("messages");
-        // const message = document.createElement("li");
-        // const content = document.createTextNode(event.data);
-        // message.appendChild(content);
-        // messages.appendChild(message);
-      };
-      function sendMessage(event) {
-        const input = document.getElementById("messageText");
-        ws.send(input.value);
-        input.value = "";
-        event.preventDefault();
+    <title>Code Snake</title>
+    <link
+      rel="stylesheet"
+      href="//unpkg.com/element-plus@2.3.7/dist/index.css"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js",
+          "element-plus": "https://unpkg.com/element-plus@2.3.7/dist/index.full.mjs",
+          "codemirror": "https://unpkg.com/codemirror@6.0.1/dist/index.js",
+          "@codemirror/language": "https://unpkg.com/@codemirror/language@6.8.0/dist/index.js",
+          "@codemirror/autocomplete": "https://unpkg.com/@codemirror/autocomplete@6.8.1/dist/index.js",
+          "@codemirror/state": "https://unpkg.com/@codemirror/state@6.2.1/dist/index.js",
+          "@codemirror/view": "https://unpkg.com/@codemirror/view@6.14.1/dist/index.js",
+          "@codemirror/commands": "https://unpkg.com/@codemirror/commands@6.2.4/dist/index.js",
+          "@codemirror/search": "https://unpkg.com/@codemirror/search@6.5.0/dist/index.js",
+          "@codemirror/lint": "https://unpkg.com/@codemirror/lint@6.4.0/dist/index.js",
+          "crelt": "https://unpkg.com/crelt@1.0.6/index.js",
+          "style-mod": "https://unpkg.com/style-mod@4.0.3/src/style-mod.js",
+          "w3c-keyname": "https://unpkg.com/w3c-keyname@2.2.8/index.js",
+          "@lezer/common": "https://unpkg.com/@lezer/common@1.0.3/dist/index.js",
+          "@lezer/python": "https://unpkg.com/@lezer/python@1.1.8/dist/index.js",
+          "@lezer/lr": "https://unpkg.com/@lezer/lr@1.3.9/dist/index.js",
+          "@lezer/highlight": "https://unpkg.com/@lezer/highlight@1.1.6/dist/index.js",
+          "@codemirror/lang-python": "https://unpkg.com/@codemirror/lang-python@6.1.3/dist/index.js",
+          "vue-codemirror": "https://unpkg.com/vue-codemirror@6.1.1/dist/vue-codemirror.esm.js"
+        }
       }
+    </script>
+    <script src="https://cdn.tailwindcss.com/3.3.2"></script>
+  </head>
+
+  <body>
+    <div class="p-8 space-y-1 h-screen flex flex-col" id="app">
+      <div class="flex flex-row mb-6">
+        <h1 class="text-3xl flex-grow">Code Snake</h1>
+        <span class="text-gray-500">你好，{{ player.name }}</span>
+      </div>
+      <div class="flex flex-row">
+        <el-form-item class="w-full mr-3" label="房间号">
+          <el-input
+            type="text"
+            v-model="roomId"
+            placeholder="请输入房间号"
+          ></el-input>
+        </el-form-item>
+        <el-button
+          :type="isGaming ? 'danger' : 'info'"
+          text
+          :style="isGaming ? { border: '1px solid red' } : { border: '1px solid gray' }"
+          @click="handleToggleGame"
+        >
+          {{ gameButtonText }}
+        </el-button>
+      </div>
+
+      <div class="flex flex-row flex-grow">
+        <!-- 游戏界面 -->
+        <div class="w-full h-full flex items-center p-8">
+          <div class="w-full aspect-square border-2">
+            <canvas class="w-full h-full" ref="canvas"></canvas>
+          </div>
+        </div>
+        <!-- 代码编辑器 -->
+        <div class="w-full h-full">
+          <codemirror
+            v-model="code"
+            placeholder="Code goes here..."
+            :style="{ width: '100%' }"
+            :autofocus="true"
+            :indent-with-tab="true"
+            :tab-size="2"
+            :extensions="codemirrorExtensions"
+          />
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createApp } from "vue";
+      import ElementPlus from "element-plus";
+      import { python } from "@codemirror/lang-python";
+      import { Codemirror } from "vue-codemirror";
+
+      const HOST = window.location.hostname;
+      const PORT = 8000;
+
+      const DEFAULT_CODE = `
+def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+    return 'KEEP_STRAIGHT'
+`;
+
+      /** @type {WebSocket} */
+      let ws;
+
+      const generateRandomName = async () => {
+        const res = await fetch("https://randomuser.me/api/?nat=us");
+        const data = await res.json();
+        return data.results[0].name.first;
+      };
+
+      /**
+       * @typedef {{ x: number; y: number }} Point
+       */
+
+      /**
+       * @typedef {{ id: string; name: string }} PlayerDto
+       */
+
+      /**
+       * @typedef {{ body_points: Point[]; player: PlayerDto }} SnakeDto
+       */
+
+      /**
+       * @typedef {{ width: number; height: number }} BoardDto
+       */
+
+      /**
+       * @typedef {{ snakes: SnakeDto[]; board: BoardDto }} GameDto
+       */
+
+      /**
+       * @typedef {{ game: GameDto }} UpdateGamePayload
+       */
+
+      /**
+       * @typedef {{ type: 'update-game'; payload: UpdateGamePayload }} UpdateGameMessage
+       */
+
+      /**
+       * @typedef {UpdateGameMessage} IncomingMessage
+       */
+
+      /**
+       * @typedef {{ player_id: number; code: string }} UpdateCodePayload
+       */
+
+      /**
+       * @typedef {{ type: 'update-code'; payload: UpdateCodePayload }} UpdateCodeMessage
+       */
+
+      /**
+       * @typedef {UpdateCodeMessage} OutgoingMessage
+       */
+
+      createApp({
+        data() {
+          return {
+            roomId: "room1",
+            player: {
+              id: Math.random().toString(36).substr(2),
+              name: "",
+            },
+            code: DEFAULT_CODE.trimStart(),
+
+            isGaming: false,
+
+            gameButtonText: "开始/进入游戏",
+            pixelWidth: 6,
+            pixelHeight: 6,
+
+            codemirrorExtensions: [python()],
+          };
+        },
+
+        mounted() {
+          console.log("玩家 ID:", this.player.id);
+
+          this.pixelWidth = this.$refs.canvas.width / 50;
+          this.pixelHeight = this.$refs.canvas.height / 50;
+
+          this.drawPixel({ x: 1, y: 1 });
+          this.drawPixel({ x: 2, y: 1 });
+
+          (async () => {
+            this.player.name = await generateRandomName();
+          })();
+        },
+
+        watch: {
+          /**
+           * @param {string} newVal
+           */
+          code(newVal) {
+            this.handleUpdateCode(newVal);
+          },
+        },
+
+        methods: {
+          /**
+           * @param {Point} point
+           */
+          drawPixel(point) {
+            /** @type {HTMLCanvasElement} */
+            const canvas = this.$refs.canvas;
+            const ctx = canvas.getContext("2d");
+
+            ctx.fillStyle = "black";
+            ctx.fillRect(
+              (point.x - 1) * this.pixelWidth,
+              (point.y - 1) * this.pixelHeight,
+              this.pixelWidth,
+              this.pixelHeight
+            );
+          },
+
+          /**
+           * @param {SnakeDto[]} snakes
+           */
+          drawSnakes(snakes) {
+            /** @type {HTMLCanvasElement} */
+            const canvas = this.$refs.canvas;
+            const ctx = canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (const snake of snakes) {
+              for (const point of snake.body_points) {
+                this.drawPixel(point);
+              }
+            }
+          },
+
+          /**
+           * 开始/结束游戏
+           */
+          handleToggleGame() {
+            if (this.isGaming) {
+              this.gameButtonText = "开始/进入游戏";
+              void this.handleStopGame();
+            } else {
+              this.gameButtonText = "结束/退出游戏";
+              void this.handleStartGame();
+            }
+
+            this.isGaming = !this.isGaming;
+          },
+
+          /**
+           * 开始游戏
+           */
+          async handleStartGame() {
+            /** @type {GameDto} */
+            const game = await fetch(`http://${HOST}:${PORT}/game`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                room_id: this.roomId,
+                player: this.player,
+              }),
+            }).then((res) => res.json());
+
+            ws = new WebSocket(`ws://${HOST}:${PORT}/game/${this.roomId}`);
+            ws.onmessage = () => {
+              /** @type {IncomingMessage} */
+              const { type, payload } = JSON.parse(event.data);
+
+              if (type === "update-game") {
+                this.drawSnakes(payload.game.snakes);
+              }
+            };
+            ws.onopen = () => {
+              this.handleUpdateCode(this.code);
+            };
+          },
+
+          /**
+           * 结束游戏
+           */
+          async handleStopGame() {
+            ws.close();
+
+            const url = new URL(`http://${HOST}:${PORT}/game/${this.roomId}`);
+            url.searchParams.append("player_id", this.player.id);
+            await fetch(url, { method: "DELETE" });
+          },
+
+          /**
+           * @param {string} code
+           */
+          handleUpdateCode(code) {
+            /** @type {UpdateCodeMessage} */
+            const message = {
+              type: "update-code",
+              payload: {
+                player_id: this.player.id,
+                code,
+              },
+            };
+            ws.send(JSON.stringify(message));
+          },
+        },
+
+        components: {
+          Codemirror,
+        },
+      })
+        .use(ElementPlus)
+        .mount("#app");
     </script>
   </body>
 </html>
