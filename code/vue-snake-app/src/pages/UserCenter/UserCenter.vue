@@ -11,10 +11,10 @@
       src="../../assets/images/个人中心/u178.svg" />
   </div>
   <div class="w-100 flex flex-row justify-between">
-    <button class="text-2xl font-bold" @click="$router.push('/login')">
-      返回
+    <button class="text-2xl font-bold" @click="$router.go(-1)">返回</button>
+    <button class="text-2xl font-bold" @click="$router.push('./setting')">
+      设置
     </button>
-    <button class="text-2xl font-bold">设置</button>
   </div>
   <div class="flex justify-center">
     <p class="text-6xl font-bold">个人信息修改</p>

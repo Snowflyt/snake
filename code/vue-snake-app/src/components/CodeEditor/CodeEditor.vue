@@ -6,7 +6,11 @@ import { Codemirror } from 'vue-codemirror';
 
 import type { Events as CodemirrorEvents } from 'vue-codemirror';
 
-const code = ref(`console.log('Hello, world!')`);
+const props = defineProps<{ code: string }>();
+const emit = defineEmits<{
+  (e: 'changeHandle', code: string): void;
+}>();
+
 const extensions = [javascript(), oneDark];
 
 // Codemirror EditorView instance ref
@@ -19,8 +23,8 @@ const handleReady = ((payload) => {
 }) satisfies CodemirrorEvents['ready'];
 
 const handleChange = ((payload) => {
-  console.log('change', payload);
-
+  //console.log('change', payload);
+  emit('changeHandle', payload);
   return true;
 }) satisfies CodemirrorEvents['change'];
 
@@ -39,7 +43,7 @@ const handleBlur = ((payload) => {
 
 <template>
   <codemirror
-    v-model="code"
+    :value="code"
     placeholder="Code goes here..."
     :style="{ height: '400px' }"
     :autofocus="true"

@@ -1,8 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import UserCenter from '../pages/UserCenter';
+import Battle from '../pages/battle';
+import Chat from '../pages/chat';
 import Combat from '../pages/combat';
+import Home from '../pages/home';
+import Leisure from '../pages/leisure';
 import Login from '../pages/login';
+import Register from '../pages/register';
+import Setting from '../pages/setting';
+import Shop from '../pages/shop';
 
 import type { RouteRecordRaw } from 'vue-router';
 
@@ -10,6 +17,13 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', component: Login },
   { path: '/combat', component: Combat },
   { path: '/userCenter', component: UserCenter },
+  { path: '/chat', component: Chat },
+  { path: '/home', component: Home },
+  { path: '/leisure', component: Leisure },
+  { path: '/register', component: Register },
+  { path: '/setting', component: Setting },
+  { path: '/shop', component: Shop },
+  { path: '/battle', component: Battle },
 ];
 
 const router = createRouter({

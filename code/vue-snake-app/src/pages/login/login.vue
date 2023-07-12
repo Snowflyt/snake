@@ -23,7 +23,7 @@
                 round
                 @click="
                   () => {
-                    $router.push('/userCenter');
+                    $router.push('/home');
                   }
                 ">
                 登录
@@ -47,7 +47,7 @@
               round
               @click="
                 () => {
-                  $router.push('/userCenter');
+                  $router.push('/home');
                 }
               ">
               登录
@@ -62,7 +62,7 @@
             class="font-blod absolute top-[50%] inline h-[50%] rounded border-2 border-black p-2 text-3xl"
             @click="
               () => {
-                $router.push('/userCenter');
+                $router.push('/home');
               }
             ">
             登录

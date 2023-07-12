@@ -2,7 +2,7 @@
   <div
     class="absolute flex h-[100%] w-[100%] flex-wrap content-center items-center justify-center border-2 border-black">
     <el-container class="h-[100%]">
-      <el-header class="h-[30%]">
+      <el-header class="h-[20%]">
         <div class="w-100 flex h-[30%] flex-row justify-between">
           <img
             id="u226_img"
@@ -27,15 +27,23 @@
           <button class="text-2xl font-bold">设置</button>
         </div>
         <div class="w-100 flex h-[30%] flex-row justify-center">
-          <b class="text-5xl font-bold">房间号:</b>
+          <b class="text-2xl font-bold">房间号:</b>
           <input v-model="RoomID" class="border-2 border-black" type="text" />
         </div>
       </el-header>
-      <el-main class="h-[60%] bg-slate-300">
+      <el-main class="h-[65%] bg-slate-300">
+        <div>
+          <p class="relative left-[17%] inline">对战区</p>
+          <p class="relative left-[70%] inline">代码区</p>
+        </div>
         <div class="w-100 flex h-[100%] flex-row justify-between bg-slate-100">
-          <canvas id="canvas1" class="w-[45%] border-2 border-black"></canvas>
+          <canvas
+            id="canvas1"
+            class="h-[400] w-[45%] border-2 border-black"></canvas>
 
-          <canvas id="canvas2" class="w-[45%]"></canvas>
+          <div class="w-[45%]">
+            <CodeEditor @changeHandle="changeHandle" />
+          </div>
         </div>
       </el-main>
       <el-footer>
@@ -50,6 +58,8 @@
 
 <script setup lang="ts">
 import { createTextVNode, onMounted, ref } from 'vue';
+
+import CodeEditor from '../../components/CodeEditor';
 const message = ref('Drawing App');
 const painting = ref(false);
 const canvas = ref(null);
@@ -110,5 +120,10 @@ const gerGridLeftUp = (g) => {
 
 const stopFreshing = () => {
   clearInterval(timeInterval.value);
+};
+const changeHandle = (e) => {
+  console.log('start sending');
+  console.log(e);
+  console.log('stop sending');
 };
 </script>
