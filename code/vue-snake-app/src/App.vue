@@ -1,34 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { RouterView } from 'vue-router';
 import 'element-plus/lib/locale/lang/zh-cn';
 
 import sampleApi from './apis/sample';
 import GameBoard from './components/GameBoard';
 import Layout from './components/Layout';
-import login from './pages/login';
-import register from './pages/register';
+import UserCenter from './pages/UserCenter';
 import chat from './pages/chat';
+import combat from './pages/combat';
 import home from './pages/home';
 import setting from './pages/setting'
 import shop from './pages/shop/shop.vue';
 import leisure from './pages/leisure'
 
 const roomId = ref('');
-
-onMounted(async () => {
-  const res = await sampleApi.echo('hello');
-  console.log(res);
-});
 </script>
 
 <template>
   <layout>
-    <div class="flex h-8 w-full flex-row bg-slate-500">
-      <el-form-item label="Activity name">
-        <el-input v-model="roomId" />
-      </el-form-item>
-    </div>
-    <game-board />
+    <router-view />
   </layout>
   <login />
   <register />

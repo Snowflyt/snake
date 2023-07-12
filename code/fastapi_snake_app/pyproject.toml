@@ -26,7 +26,6 @@ start = "fastapi_snake_app.main:start"
 
 [tool.poetry.group.dev.dependencies]
 pandas-stubs = "^2.0.1.230501"
-sqlalchemy2-stubs = "^0.0.2a34"
 
 [build-system]
 requires = ["poetry-core"]
