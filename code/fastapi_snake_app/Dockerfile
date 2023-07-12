@@ -1,7 +1,7 @@
 FROM python:3.11 as python-base
 
 # https://python-poetry.org/docs#ci-recommendations
-ENV POETRY_VERSION=1.2.0
+ENV POETRY_VERSION=1.5.1
 ENV POETRY_HOME=/opt/poetry
 ENV POETRY_VENV=/opt/poetry-venv
 
