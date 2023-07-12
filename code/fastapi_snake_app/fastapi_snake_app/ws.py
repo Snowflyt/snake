@@ -157,29 +157,32 @@ class Snake:
         self._body_points.pop()
 
 
-T = TypeVar('T')
-
-
-class OutgoingMessage(TypedDict, Generic[T]):
-    type: str
-    data: T
-
-
-class IncomingMessage(TypedDict, Generic[T]):
-    type: str
-    data: T
-
-
 class UpdateCodePayload(TypedDict):
     code: str
 
 
-async def update_code(payload: UpdateCodePayload) -> None:
-    ...
+class UpdateCodeMessage(TypedDict):
+    type: Literal['update-code']
+    payload: UpdateCodePayload
+
+
+IncomingMessage: TypeAlias = UpdateCodeMessage
 
 
 class UpdateGamePayload(TypedDict):
     game: str
+
+
+class UpdateGameMessage(TypedDict):
+    type: Literal['update-game']
+    payload: UpdateGamePayload
+
+
+OutgoingMessage: TypeAlias = UpdateGameMessage
+
+
+async def update_code(payload: UpdateCodePayload) -> None:
+    ...
 
 
 async def update_game(payload: UpdateGamePayload) -> None:
@@ -192,12 +195,14 @@ async def websocket_endpoint(websocket: WebSocket) -> NoReturn:
 
     last_time = time.time()
     while True:
-        data: IncomingMessage[Any] = await websocket.receive_json()
+        data: IncomingMessage = await websocket.receive_json()
 
         if data['type'] == 'update-code':
-            await update_code(data['data'])
+            await update_code(data['payload'])
 
         # Send a message to update the game every second
         if time.time() - last_time > 1:
             last_time = time.time()
-            await websocket.send_json(OutgoingMessage(type='update-game', data=await update_game(data['data'])))
+            await websocket.send_json(UpdateGameMessage(
+                type='update-game',
+                payload=UpdateGamePayload(game='')))
