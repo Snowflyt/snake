@@ -27,6 +27,14 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+with open('./fastapi_snake_app/game.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+
+@app.get('/', include_in_schema=False)
+async def index() -> HTMLResponse:
+    return HTMLResponse(html)
+
 
 def start() -> None:
     """
