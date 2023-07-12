@@ -14,3 +14,5 @@ class User(SQLModel, table=True):
     rank: str = '最强青铜IV'
     score: int = Field(default=0)
     language_excellent:str=Field(default="全能")
+
+
