@@ -20,7 +20,7 @@ class UpdateUserRequest(BaseModel):
 @app.post('/register')
 async def login(user_id:int,update_user_request: UpdateUserRequest):
     with Session(engine) as session:
-        statement = select(User).where(User.id == "Spider-Boy")
+        statement = select(User).where(User.id == user_id)
         results = session.exec(statement)
         user = results.one()
         user.username = update_user_request.username
