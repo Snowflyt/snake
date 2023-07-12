@@ -9,7 +9,10 @@ from fastapi.responses import HTMLResponse
 app = FastAPI(redoc_url=None)
 
 importlib.import_module('fastapi_snake_app.db')
+importlib.import_module('fastapi_snake_app.ws')
 importlib.import_module('fastapi_snake_app.game')
+
+# Import all routes
 importlib.import_module('fastapi_snake_app.note')
 
 # Allow CORS
@@ -27,7 +30,7 @@ def start() -> None:
     Launched with `poetry run start` at root level.
     """
 
-    uvicorn.run('fastapi_snake_app.main:app', reload=True)  # type: ignore
+    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='0.0.0.0')  # type: ignore
 
 
 def get_redoc_html(
@@ -91,3 +94,8 @@ async def redoc_try_it_out() -> HTMLResponse:
 
     title = f'{app.title} Redoc'
     return get_redoc_html(openapi_url=cast(str, app.openapi_url), title=title)
+
+
+@app.get('/echo')
+async def echo(text: str) -> str:
+    return text
