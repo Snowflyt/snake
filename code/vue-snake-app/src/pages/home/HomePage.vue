@@ -23,7 +23,7 @@
           class=""
           src="../../assets/images/主页/u35.svg"
           style="cursor: hand"
-          @click="$router.push('/setting')" />设置
+          @click="$router.push('/settings')" />设置
       </div>
     </div>
     <div class="w-50 mt-5">

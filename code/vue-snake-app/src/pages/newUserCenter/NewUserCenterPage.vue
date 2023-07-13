@@ -52,7 +52,7 @@ const handleSubmitChange = async () => {
   </div>
   <div class="w-100 flex flex-row justify-between">
     <button class="text-2xl font-bold" @click="$router.go(-1)">Back</button>
-    <button class="text-2xl font-bold" @click="$router.push('/setting')">
+    <button class="text-2xl font-bold" @click="$router.push('/settings')">
       Setting
     </button>
   </div>
