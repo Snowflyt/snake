@@ -5,20 +5,12 @@
         class=""
         src="../../assets/images/论坛/u185.svg"
         style="cursor: hand"
-        @click="
-          () => {
-            $router.go(-1);
-          }
-        " />
+        @click="$router.go(-1)" />
       <img
         class=""
         src="../../assets/images/论坛/u206.svg"
         style="cursor: hand"
-        @click="
-          () => {
-            $router.push('./setting');
-          }
-        " />
+        @click="$router.push('/setting')" />
     </div>
     <div class="">
       <div
@@ -62,4 +54,3 @@
     </div>
   </div>
 </template>
-<script setup lang="ts"></script>

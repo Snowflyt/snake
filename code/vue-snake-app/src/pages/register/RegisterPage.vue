@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const username = ref('');
+const password = ref('');
+</script>
+
 <template>
   <div class="mx-auto w-4/5">
     <div class="mb-7 flex justify-center">
@@ -8,25 +15,14 @@
       <el-input v-model="username"></el-input>
     </el-form-item>
     <el-form-item class="mr-4" label="请输入验证码：">
-      <el-input v-model="pwd"></el-input>
+      <el-input v-model="password"></el-input>
     </el-form-item>
     <div class="flex justify-center">
       <button
         class="w-32 rounded-md bg-black p-4 text-white"
-        @click="$router.push('/home')">
+        @click="$router.push('/')">
         注册
       </button>
     </div>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  data() {
-    return {
-      username: '',
-      pwd: '',
-    };
-  },
-};
-</script>

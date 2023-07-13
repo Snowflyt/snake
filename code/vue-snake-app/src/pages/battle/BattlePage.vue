@@ -5,11 +5,7 @@
         class=""
         src="../../assets/images/设置/u243.svg"
         style="cursor: hand"
-        @click="
-          () => {
-            $router.go(-1);
-          }
-        " />
+        @click="$router.go(-1)" />
     </div>
     <div class="ml-42 flex justify-around">
       <div class="left flex flex-col items-center">
@@ -32,7 +28,7 @@
         <div class="mb-8 flex w-96 items-center justify-around">
           <div
             class="flex items-center justify-center rounded-xl bg-gray-300 p-2"
-            @click="$router.push('./combat')">
+            @click="$router.push('/combat')">
             单人排位
           </div>
           <div
@@ -60,4 +56,3 @@
     </div>
   </div>
 </template>
-<script setup lang="ts"></script>

@@ -1,6 +1,6 @@
 import { request } from '@/utils/request';
 
-export interface Note {
+export interface NoteDto {
   id: number;
   text: string;
   completed: boolean;
@@ -12,11 +12,11 @@ export interface CreateNoteInput {
 }
 
 const noteApi = {
-  async findAll(): Promise<Note[]> {
+  async findAll(): Promise<NoteDto[]> {
     return await request.get('/api/notes');
   },
 
-  async create(input: CreateNoteInput): Promise<Note> {
+  async create(input: CreateNoteInput): Promise<NoteDto> {
     return await request.post('/api/note', {
       data: input,
     });

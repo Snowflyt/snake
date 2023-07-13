@@ -1,3 +1,3 @@
-import newChat from './newChat.vue';
+import NewChatPage from './NewChatPage.vue';
 
-export default newChat;
+export default NewChatPage;
