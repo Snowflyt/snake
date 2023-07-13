@@ -184,7 +184,8 @@ class Snake:
             if action not in ('TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'):
                 raise ValueError('Invalid code')
             self._code = code
-            print(f'Player(id="{self.player.id}", name="{self.player.name}"): Code updated')
+            print(
+                f'Player(id="{self.player.id}", name="{self.player.name}"): Code updated')
             print(self._code)
         except Exception:
             return
@@ -258,6 +259,11 @@ class Snake:
 
         self._body_points.pop()
 
+    def hits(self, other: 'Snake') -> bool:
+        if self.head in other.body_points:
+            return True
+        return False
+
     def to_dto(self) -> SnakeDto:
         return {
             'body_points': [point.to_dto() for point in self._body_points],
@@ -274,20 +280,20 @@ class Snake:
 class GameDto(TypedDict):
     snakes: list[SnakeDto]
     board: BoardDto
-    round: int
+    iteration: int
 
 
 @dataclass
 class Game:
     snakes: list[Snake]
     board: Board
-    round: int = 1
+    iteration: int = 0
 
     def to_dto(self) -> GameDto:
         return {
             'snakes': [snake.to_dto() for snake in self.snakes],
             'board': self.board.to_dto(),
-            'round': self.round
+            'iteration': self.iteration,
         }
 
 
@@ -321,7 +327,7 @@ def start_game(ipt: StartGameInput) -> GameDto:
         board = Board(width=BOARD_WIDTH, height=BOARD_HEIGHT)
         snakes = [Snake(body_nodes=[head, after_head],
                         board=board, player=ipt.player)]
-        game = Game(snakes=snakes, board=board, round=1)
+        game = Game(snakes=snakes, board=board)
         games[ipt.room_id] = game
     else:
         game = games[ipt.room_id]
@@ -390,6 +396,9 @@ async def update_game(game: Game) -> None:
 async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
     await websocket.accept()
 
+    game = games[room_id]
+
+    last_iteration = game.iteration
     last_time = time.time()
 
     async def receive_handle():
@@ -407,8 +416,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
             if time.time() - last_time > 0.5:
                 last_time = time.time()
 
-                game = games[room_id]
-                await update_game(game)
+                if game.iteration == last_iteration:
+                    game.iteration += 1
+                    last_iteration = game.iteration
+
+                    await update_game(game)
 
                 await websocket.send_json(UpdateGameMessage(
                     type='update-game',

@@ -45,7 +45,7 @@ def start() -> None:
     Launched with `poetry run start` at root level.
     """
 
-    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='127.0.0.1')  # type: ignore
+    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='0.0.0.0')  # type: ignore
 
 
 def get_redoc_html(
