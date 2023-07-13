@@ -126,11 +126,8 @@ import { ref } from 'vue';
 var ws = null;
 const messageContent = ref('');
 function connect(event) {
-  var itemId = document.getElementById('itemId');
-  var token = document.getElementById('token');
-  ws = new WebSocket(
-    'ws://localhost:8080/items/' + itemId.value + '/ws?token=' + token.value,
-  );
+  alert('开始连接');
+  ws = new WebSocket('ws://101.132.165.23:8000/ws');
   ws.onmessage = function (event) {
     var messages = document.getElementById('chatMainContent');
 
@@ -173,7 +170,7 @@ function sendMessage() {
   //   'text-gray-700',
   //   'shadow',
   // );
-
+  ws.send(messageContent.value);
   var content = document.createTextNode(messageContent.value);
   message.appendChild(content);
   messageOut.appendChild(message);
