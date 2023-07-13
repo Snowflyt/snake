@@ -121,6 +121,7 @@
     </div>
   </div>
 </template>
+<<<<<<< HEAD:code/vue-snake-app/src/pages/newChatContent/newChatContent.vue
 <script setup>
 import { ref } from 'vue';
 var ws = null;
@@ -189,3 +190,5 @@ function sendMessage() {
   messageContent.value = '';
 }
 </script>
+=======
+>>>>>>> 6beca03979371e6b8a0d664957c644919e955502:code/vue-snake-app/src/pages/newChatContent/NewChatContentPage.vue

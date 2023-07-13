@@ -1,2 +1,3 @@
-import combat from './combat.vue';
-export default combat;
+import CombatPage from './CombatPage.vue';
+
+export default CombatPage;

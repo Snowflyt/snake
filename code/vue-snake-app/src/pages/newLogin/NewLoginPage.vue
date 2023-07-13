@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { apis } from '@/utils/apis';
+
+const router = useRouter();
+
+const username = ref('');
+const password = ref('');
+
+const handleSubmitChange = async () => {
+  try {
+    const response = apis.user.login({
+      username: username.value,
+      password: password.value,
+    });
+    console.log(response);
+    alert('登录成功');
+    router.push('/');
+  } catch (error) {
+    console.log(error);
+    alert('登录数据有误');
+  }
+};
+</script>
+
 <template class="bg-gray-50 dark:bg-gray-900">
   <div
     class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
@@ -26,12 +53,12 @@
             >
             <input
               id="email"
-              v-model="UserName"
+              v-model="username"
               type="email"
               name="email"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
               placeholder="name@company.com"
-              required="" />
+              required />
           </div>
           <div>
             <label
@@ -41,12 +68,12 @@
             >
             <input
               id="password"
-              v-model="Password"
+              v-model="password"
               type="password"
               name="password"
               placeholder="••••••••"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              required="" />
+              required />
           </div>
           <div class="flex items-center justify-between">
             <div class="flex items-start">
@@ -56,7 +83,7 @@
                   aria-describedby="remember"
                   type="checkbox"
                   class="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                  required="" />
+                  required />
               </div>
               <div class="ml-3 text-sm">
                 <label for="remember" class="text-gray-500 dark:text-gray-300"
@@ -81,7 +108,7 @@
             <b
               href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              @click="$router.push('/newRegister')"
+              @click="$router.push('/new-register')"
               >Sign Up</b
             >
           </p>
@@ -90,33 +117,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import axios from 'axios';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-var UserName = ref('');
-var Password = ref('');
-var Telephone: number = ref('');
-var VerifyCode: number = ref('');
-const handleSubmitChange = async () => {
-  axios
-    .post('http://101.132.165.23:8000/login', {
-      username: UserName.value,
-      password: Password.value,
-    })
-    .then(function (response) {
-      console.log(response.data);
-      alert('登录成功');
-      setTimeout(() => {
-        router.push('./home');
-      }, 2000);
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert('登录数据有误');
-    });
-};
-</script>

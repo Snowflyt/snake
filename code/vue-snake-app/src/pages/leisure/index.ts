@@ -1,3 +1,3 @@
-import leisure from './leisure.vue';
+import LeisurePage from './LeisurePage.vue';
 
-export default leisure;
+export default LeisurePage;

@@ -1,3 +1,37 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+import { apis } from '@/utils/apis';
+
+const username = ref('');
+const password = ref('');
+const phone = ref('');
+const confirmedPassword = ref('');
+
+const router = useRouter();
+const handleSubmitChange = async () => {
+  if (password.value != confirmedPassword.value) {
+    alert('密码不一致');
+    return;
+  }
+
+  try {
+    const data = await apis.user.register({
+      username: username.value,
+      password: password.value,
+      phoneNumber: phone.value,
+    });
+    console.log(data);
+    alert('注册成功');
+    router.push('/');
+  } catch (error) {
+    console.log(error);
+    alert('注册数据有误');
+  }
+};
+</script>
+
 <template class="bg-gray-50 dark:bg-gray-900">
   <div
     class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
@@ -26,12 +60,12 @@
             >
             <input
               id="email"
-              v-model="UserName"
+              v-model="username"
               type="email"
               name="email"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
               placeholder="name@company.com"
-              required="" />
+              required />
           </div>
           <div>
             <label
@@ -41,12 +75,12 @@
             >
             <input
               id="password"
-              v-model="Password"
+              v-model="password"
               type="password"
               name="password"
               placeholder="••••••••"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              required="" />
+              required />
           </div>
           <div>
             <label
@@ -56,12 +90,12 @@
             >
             <input
               id="confirm-password"
-              v-model="ConfirmedPassword"
+              v-model="confirmedPassword"
               type="password"
               name="confirm-password"
               placeholder="••••••••"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              required="" />
+              required />
           </div>
           <div>
             <label
@@ -70,11 +104,11 @@
             >
             <input
               id="telephone"
-              v-model="phoneNumber"
+              v-model="phone"
               name="telephone"
               placeholder="12345678911"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
-              required="" />
+              required />
           </div>
           <div class="flex items-start">
             <div class="flex h-5 items-center">
@@ -83,7 +117,7 @@
                 aria-describedby="terms"
                 type="checkbox"
                 class="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                required="" />
+                required />
             </div>
             <div class="ml-3 text-sm">
               <label
@@ -109,7 +143,7 @@
             <b
               href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              @click="$router.push('/newLogin')"
+              @click="$router.push('/new-login')"
               >Login here</b
             >
           </p>
@@ -118,36 +152,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import axios from 'axios';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-const UserName = ref('');
-const Password = ref('');
-const phoneNumber = ref('');
-const ConfirmedPassword = ref('');
-
-const router = useRouter();
-const handleSubmitChange = async () => {
-  if (Password.value != ConfirmedPassword.value) {
-    alert('密码不一致');
-    return;
-  }
-  axios
-    .post('http://101.132.165.23:8000/register', {
-      username: UserName.value,
-      password: Password.value,
-      phone_number: phoneNumber.value,
-    })
-    .then(function (response) {
-      console.log(response.data);
-      alert('注册成功');
-      router.push('./home');
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert('注册数据有误');
-    });
-};
-</script>

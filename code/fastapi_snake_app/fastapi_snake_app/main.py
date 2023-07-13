@@ -48,7 +48,8 @@ def start_dev() -> None:
     Launched with `poetry run start` or `poetry run start:dev` at root level.
     """
 
-    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='127.0.0.1')  # type: ignore
+    uvicorn.run('fastapi_snake_app.main:app',
+                reload=True, host='127.0.0.1')
 
 
 def start_prod() -> None:

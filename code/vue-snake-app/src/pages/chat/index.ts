@@ -1,3 +1,3 @@
-import chat from './chat.vue';
+import ChatPage from './ChatPage.vue';
 
-export default chat;
+export default ChatPage;

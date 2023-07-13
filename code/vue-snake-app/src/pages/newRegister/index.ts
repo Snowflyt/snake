@@ -1,3 +1,3 @@
-import newRegister from './newRegister.vue';
+import NewRegisterPage from './NewRegisterPage.vue';
 
-export default newRegister;
+export default NewRegisterPage;

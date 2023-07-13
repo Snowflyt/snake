@@ -1,3 +1,3 @@
-import register from './register.vue';
+import RegisterPage from './RegisterPage.vue';
 
-export default register;
+export default RegisterPage;
