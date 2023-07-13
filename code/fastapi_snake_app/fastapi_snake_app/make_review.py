@@ -16,7 +16,7 @@ class ReviewMade(BaseModel):
 
 
 @app.post("/makeReviews")
-async def create_review(review_made: ReviewMade):
+async def make_review(review_made: ReviewMade):
     with Session(engine) as session:
         id = review_made.id
         username = review_made.username

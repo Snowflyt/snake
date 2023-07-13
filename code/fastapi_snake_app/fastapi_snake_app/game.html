@@ -71,7 +71,8 @@
 
       <div class="flex flex-row flex-grow">
         <!-- 游戏界面 -->
-        <div class="w-full h-full flex items-center p-8">
+        <div class="w-full h-full flex flex-col items-center p-8">
+          <span>当前分数: {{ player.score }}</span>
           <div class="w-full aspect-square border-2">
             <canvas class="w-full h-full" ref="canvas"></canvas>
           </div>
@@ -84,7 +85,7 @@
             :style="{ width: '100%' }"
             :autofocus="true"
             :indent-with-tab="true"
-            :tab-size="2"
+            :tab-size="4"
             :extensions="codemirrorExtensions"
           />
         </div>
@@ -102,7 +103,24 @@
       const PORT = 8000;
 
       const DEFAULT_CODE = `
-def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+def step(snake, other_snakes, board):
+    """
+    每一步的决策函数，返回值为 'TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT' 之一
+
+    :param snake: 自己的蛇，如 SnakeInfo(
+        body_points=[Point(x=0, y=0), Point(x=0, y=1), Point(x=0, y=2)],
+        head=Point(x=0, y=0),
+        direction='up',  # 'up', 'down', 'left', 'right'
+        player=Player(id='2j3lj66x', name='Alice'),
+    )
+    :param other_snakes: 其他蛇的信息，如 [SnakeInfo(...), SnakeInfo(...)]
+    :param board: 地图信息，如 BoardInfo(
+        width=20,
+        height=20,
+        foods=[Food(point=Point(x=1, y=1), color='#ff0000'), Food(...)],
+    )
+    """
+
     return 'KEEP_STRAIGHT'
 `;
 
@@ -143,19 +161,23 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
        */
 
       /**
-       * @typedef {{ id: string; name: string }} PlayerDto
+       * @typedef {{ id: string; name: string; score: number }} PlayerDto
        */
 
       /**
        * @typedef {{ body_points: Point[]; player: PlayerDto; color: string }} SnakeDto
        */
-
+    
       /**
-       * @typedef {{ width: number; height: number }} BoardDto
+       * @typedef {{ point: Point; color: string }} FoodDto
        */
 
       /**
-       * @typedef {{ snakes: SnakeDto[]; board: BoardDto }} GameDto
+       * @typedef {{ width: number; height: number; foods: FoodDto[] }} BoardDto
+       */
+
+      /**
+       * @typedef {{ snakes: SnakeDto[]; players: PlayerDto[]; board: BoardDto }} GameDto
        */
 
       /**
@@ -191,6 +213,7 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
             player: {
               id: playerId,
               name: "",
+              score: 0,
             },
             snakeColor: generateColor(playerId),
             code: DEFAULT_CODE.trimStart(),
@@ -211,9 +234,6 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
           this.pixelWidth = this.$refs.canvas.width / 50;
           this.pixelHeight = this.$refs.canvas.height / 50;
-
-          this.drawPixel({ x: 1, y: 1, type: 'small' });
-          this.drawPixel({ x: 1, y: 2, type: 'small' });
 
           (async () => {
             this.player.name = await generateRandomName();
@@ -278,6 +298,15 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
           },
 
           /**
+           * @param {FoodDto[]} foods
+           */
+          drawFoods(foods) {
+            for (const food of foods) {
+              this.drawPixel({ ...food.point, color: food.color, type: "small" });
+            }
+          },
+
+          /**
            * 开始/结束游戏
            */
           handleToggleGame() {
@@ -305,16 +334,21 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
               body: JSON.stringify({
                 room_id: this.roomId,
                 player: this.player,
+                snake_color: this.snakeColor,
               }),
             }).then((res) => res.json());
 
             ws = new WebSocket(`ws://${HOST}:${PORT}/game/${this.roomId}`);
-            ws.onmessage = () => {
+            ws.onmessage = (event) => {
               /** @type {IncomingMessage} */
               const { type, payload } = JSON.parse(event.data);
 
               if (type === "update-game") {
                 this.drawSnakes(payload.game.snakes);
+                this.drawFoods(payload.game.board.foods);
+                this.player.score = payload.game.players.find(
+                  (player) => player.id === this.player.id
+                ).score;
               }
             };
             ws.onopen = () => {

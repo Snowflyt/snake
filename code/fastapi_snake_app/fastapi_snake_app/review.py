@@ -13,7 +13,7 @@ async def read_reviews() -> list[Review]:
 
 
 @app.post('/review')
-async def create_user(review: Review):
+async def create_review(review: Review):
     with Session(engine) as session:
         session.add(review)
         session.commit()
