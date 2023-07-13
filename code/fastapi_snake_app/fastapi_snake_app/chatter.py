@@ -48,7 +48,7 @@ html = """
 
 
 # 返回一段 HTML 代码给前端
-@app.get("/")
+@app.get("/chatter")
 async def get():
     return HTMLResponse(html)
 
