@@ -37,13 +37,13 @@
               <div class="w-full pb-2">
                 <div class="flex justify-between">
                   <span class="ml-2 block font-semibold text-gray-600"
-                    >Jhon Don</span
+                    >Meeting1</span
                   >
                   <span class="ml-2 block text-sm text-gray-600"
                     >25 minutes</span
                   >
                 </div>
-                <span class="ml-2 block text-sm text-gray-600">bye</span>
+                <span class="ml-2 block text-sm text-gray-600">hello</span>
               </div>
             </b>
             <b
@@ -55,13 +55,13 @@
               <div class="w-full pb-2">
                 <div class="flex justify-between">
                   <span class="ml-2 block font-semibold text-gray-600"
-                    >Same</span
+                    >Meeting2</span
                   >
                   <span class="ml-2 block text-sm text-gray-600"
                     >50 minutes</span
                   >
                 </div>
-                <span class="ml-2 block text-sm text-gray-600">Good night</span>
+                <span class="ml-2 block text-sm text-gray-600">hello</span>
               </div>
             </b>
             <b
@@ -73,19 +73,17 @@
               <div class="w-full pb-2">
                 <div class="flex justify-between">
                   <span class="ml-2 block font-semibold text-gray-600"
-                    >Emma</span
+                    >Meeting3</span
                   >
                   <span class="ml-2 block text-sm text-gray-600">6 hour</span>
                 </div>
-                <span class="ml-2 block text-sm text-gray-600"
-                  >Good Morning</span
-                >
+                <span class="ml-2 block text-sm text-gray-600">Hello</span>
               </div>
             </b>
           </li>
         </ul>
       </div>
-      <div class="hidden lg:col-span-2 lg:block">
+      <!-- <div class="hidden lg:col-span-2 lg:block">
         <div class="w-full">
           <div class="relative flex items-center border-b border-gray-300 p-3">
             <img
@@ -191,7 +189,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
