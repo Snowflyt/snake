@@ -244,10 +244,10 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
             if (type === "small") {
               ctx.fillRect(
-                (options.x - 1) * this.pixelWidth + this.pixelWidth / 2 - 1,
-                (options.y - 1) * this.pixelHeight + this.pixelHeight / 2 - 1,
-                1,
-                1,
+                (options.x - 1) * this.pixelWidth + this.pixelWidth / 4,
+                (options.y - 1) * this.pixelHeight + this.pixelHeight / 4,
+                this.pixelWidth / 2,
+                this.pixelHeight / 2
               );
               return;
             }
