@@ -10,16 +10,16 @@
             () => {
               $router.push('./shop');
             }
-          " />商城
+          " />ShoppingMall
         <img
           class=""
           src="../../assets/images/主页/u39.svg"
           style="cursor: hand"
           @click="
             () => {
-              $router.push('./chat');
+              $router.push('./newChatContent');
             }
-          " />论坛
+          " />ChatRoom
       </div>
       <div class="flex w-44 justify-around">
         <img
@@ -28,9 +28,9 @@
           style="cursor: hand"
           @click="
             () => {
-              $router.push('./userCenter');
+              $router.push('./newUserCenter');
             }
-          " />用户
+          " />UserCenter
         <img
           class=""
           src="../../assets/images/主页/u35.svg"
@@ -39,7 +39,7 @@
             () => {
               $router.push('./setting');
             }
-          " />设置
+          " />Setting
       </div>
     </div>
     <div class="w-50 mt-5">
