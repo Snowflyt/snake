@@ -9,7 +9,7 @@
                 class="h-10 w-10 rounded-full object-cover"
                 src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
                 alt="username" />
-              <span class="ml-2 block font-bold text-gray-600">Emma</span>
+              <span class="ml-2 block font-bold text-gray-600">聊天室</span>
               <span
                 class="absolute left-10 top-3 h-3 w-3 rounded-full bg-green-600">
               </span>
@@ -124,31 +124,42 @@
 <script setup>
 import { ref } from 'vue';
 var ws = null;
+var client_id = ref(0);
 const messageContent = ref('');
 function connect(event) {
   alert('开始连接');
-  ws = new WebSocket('ws://101.132.165.23:8000/ws');
+  ws = new WebSocket('ws://101.132.165.23:8000/ws/' + client_id.value);
+  ws.onclose = function (event) {
+    if (event.wasClean) {
+      alert(
+        `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`,
+      );
+    } else {
+      // 例如服务器进程被杀死或网络中断
+      // 在这种情况下，event.code 通常为 1006
+      alert('[close] Connection died');
+    }
+  };
+
+  ws.onerror = function (error) {
+    alert(`[error] ${error.message}`);
+  };
   ws.onmessage = function (event) {
     var messages = document.getElementById('chatMainContent');
 
     var messageOut = document.createElement('li');
-    messageOut.classList.add('flex', 'justify-start');
+    messageOut.className = 'flex justify-start';
+
     var message = document.createElement('div');
-    message.classList.add(
-      'relative',
-      'max-w-xl',
-      ' rounded',
-      'px-4',
-      ' py-2',
-      'text-gray-700',
-      'shadow',
-    );
+    message.className =
+      'relative max-w-xl rounded px-4 py-2 text-gray-700 shadow';
 
     var content = document.createTextNode(event.data);
     message.appendChild(content);
     messageOut.appendChild(message);
     messages.appendChild(messageOut);
   };
+  //ws.onopen = () => ws.send(messageContent.value);
   event.preventDefault();
 }
 function sendMessage() {
