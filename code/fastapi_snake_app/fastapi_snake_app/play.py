@@ -15,7 +15,7 @@ async def read_plays() -> list[Play]:
 @app.post('/play')
 async def create_play(play: Play):
     with Session(engine) as session:
-        session.add(Play)
+        session.add(play)
         session.commit()
-        session.refresh(Play)
+        session.refresh(play)
         return play
