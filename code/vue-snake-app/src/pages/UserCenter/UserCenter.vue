@@ -26,25 +26,26 @@
 
     <el-form class="absolute left-[50%] top-[35%] w-[30%]">
       <el-form-item label="ID">
-        <el-input v-model="ID" />
+        <el-input v-model.number="ID" type="number" />
       </el-form-item>
-      <el-form-item label="段位">
-        <el-input v-model="Grade" />
-      </el-form-item>
+
       <el-form-item label="擅长语言">
         <el-input v-model="PreferredLang" />
       </el-form-item>
-      <el-form-item label="个人简介">
-        <el-input v-model="PersonalInfo" />
+      <el-form-item label="用户名">
+        <el-input v-model="UserName" />
+      </el-form-item>
+      <el-form-item label="密码">
+        <el-input v-model="Password" />
+      </el-form-item>
+      <el-form-item label="手机号">
+        <el-input v-model="Phonenumber" />
       </el-form-item>
       <el-form-item>
         <button
+          type="button"
           class="rounded border-2 border-black p-2 text-3xl font-bold"
-          @click="
-            () => {
-              $router.push('/combat');
-            }
-          ">
+          @click="handleSubmitChange">
           提交修改
         </button>
       </el-form-item>
@@ -55,10 +56,34 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-var ID = ref('');
-var Grade = ref('');
-var PreferredLang = ref('');
-var PersonalInfo = ref('');
+
+import sampleApi from '../../apis/sample';
+const ID: number = ref(0);
+const PreferredLang = ref('');
+const Password = ref('');
+const UserName = ref('');
+const Phonenumber = ref('');
+
+const handleSubmitChange = async () => {
+  console.log('start');
+
+  try {
+    const data = {
+      id: ID.value,
+      phone_number: Phonenumber.value,
+      language_excellent: PreferredLang.value,
+      username: UserName.value,
+      password: Password.value,
+    };
+    console.log(data);
+    const res = await sampleApi.createUsers(data);
+    res.then((result) => {
+      console.log('result:', result);
+    });
+  } catch {
+    alert('信息填写错误');
+  }
+};
 </script>
 
 <style>

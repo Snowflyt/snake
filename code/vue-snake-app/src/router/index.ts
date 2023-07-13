@@ -7,6 +7,9 @@ import Combat from '../pages/combat';
 import Home from '../pages/home';
 import Leisure from '../pages/leisure';
 import Login from '../pages/login';
+import NewLogin from '../pages/newLogin';
+import NewRegister from '../pages/newRegister';
+import NewUserCenter from '../pages/newUserCenter';
 import Register from '../pages/register';
 import Setting from '../pages/setting';
 import Shop from '../pages/shop';
@@ -24,6 +27,9 @@ const routes: RouteRecordRaw[] = [
   { path: '/setting', component: Setting },
   { path: '/shop', component: Shop },
   { path: '/battle', component: Battle },
+  { path: '/newLogin', component: NewLogin },
+  { path: '/newRegister', component: NewRegister },
+  { path: '/newUserCenter', component: NewUserCenter },
 ];
 
 const router = createRouter({
