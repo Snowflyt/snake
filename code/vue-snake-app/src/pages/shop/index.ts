@@ -1,3 +1,3 @@
-import shop from './shop.vue';
+import ShopPage from './ShopPage.vue';
 
-export default shop;
+export default ShopPage;

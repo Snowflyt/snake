@@ -1,3 +1,3 @@
-import setting from './setting.vue';
+import SettingPage from './SettingPage.vue';
 
-export default setting;
+export default SettingPage;

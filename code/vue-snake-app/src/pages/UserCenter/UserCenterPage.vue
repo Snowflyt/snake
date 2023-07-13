@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+
+import { apis } from '@/utils/apis';
+
+const id = ref(0);
+const preferredLang = ref('');
+const password = ref('');
+const username = ref('');
+const phone = ref('');
+
+const handleSubmitChange = async () => {
+  try {
+    const user = await apis.user.create({
+      id: id.value,
+      phoneNumber: phone.value,
+      languageExcellent: preferredLang.value,
+      username: username.value,
+      password: password.value,
+    });
+    console.log('result:', user);
+  } catch {
+    alert('信息填写错误');
+  }
+};
+</script>
+
 <template>
   <div class="flex flex-row justify-between">
     <img
@@ -12,7 +39,7 @@
   </div>
   <div class="w-100 flex flex-row justify-between">
     <button class="text-2xl font-bold" @click="$router.go(-1)">返回</button>
-    <button class="text-2xl font-bold" @click="$router.push('./setting')">
+    <button class="text-2xl font-bold" @click="$router.push('/setting')">
       设置
     </button>
   </div>
@@ -26,20 +53,20 @@
 
     <el-form class="absolute left-[50%] top-[35%] w-[30%]">
       <el-form-item label="ID">
-        <el-input v-model.number="ID" type="number" />
+        <el-input v-model.number="id" type="number" />
       </el-form-item>
 
       <el-form-item label="擅长语言">
-        <el-input v-model="PreferredLang" />
+        <el-input v-model="preferredLang" />
       </el-form-item>
       <el-form-item label="用户名">
-        <el-input v-model="UserName" />
+        <el-input v-model="username" />
       </el-form-item>
       <el-form-item label="密码">
-        <el-input v-model="Password" />
+        <el-input v-model="password" />
       </el-form-item>
       <el-form-item label="手机号">
-        <el-input v-model="Phonenumber" />
+        <el-input v-model="phone" />
       </el-form-item>
       <el-form-item>
         <button
@@ -54,39 +81,7 @@
   <div class="h-[20%]"></div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue';
-
-import sampleApi from '../../apis/sample';
-const ID: number = ref(0);
-const PreferredLang = ref('');
-const Password = ref('');
-const UserName = ref('');
-const Phonenumber = ref('');
-
-const handleSubmitChange = async () => {
-  console.log('start');
-
-  try {
-    const data = {
-      id: ID.value,
-      phone_number: Phonenumber.value,
-      language_excellent: PreferredLang.value,
-      username: UserName.value,
-      password: Password.value,
-    };
-    console.log(data);
-    const res = await sampleApi.createUsers(data);
-    res.then((result) => {
-      console.log('result:', result);
-    });
-  } catch {
-    alert('信息填写错误');
-  }
-};
-</script>
-
-<style>
+<style scoped lang="scss">
 img {
   width: auto;
   height: auto;

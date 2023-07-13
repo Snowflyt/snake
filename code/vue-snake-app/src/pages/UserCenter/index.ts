@@ -1,2 +1,3 @@
-import UserCenter from './UserCenter.vue';
-export default UserCenter;
+import UserCenterPage from './UserCenterPage.vue';
+
+export default UserCenterPage;

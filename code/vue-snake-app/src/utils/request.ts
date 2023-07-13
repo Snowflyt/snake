@@ -4,7 +4,8 @@
  * @param params
  * @returns
  */
-const buildURL = (url: string | URL, params?: Record<string, string>): URL => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const buildURL = (url: string | URL, params?: Record<string, any>): URL => {
   let urlObject: URL;
   try {
     urlObject = new URL(url);
@@ -19,14 +20,15 @@ const buildURL = (url: string | URL, params?: Record<string, string>): URL => {
   if (!params) return urlObject;
 
   for (const [key, value] of Object.entries(params)) {
-    urlObject.searchParams.append(key, value);
+    urlObject.searchParams.append(key, String(value));
   }
 
   return urlObject;
 };
 
 type RequestOptions = Omit<RequestInit, 'method'> & {
-  params?: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params?: Record<string, any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
 };
@@ -38,9 +40,10 @@ const _request = async <R = unknown>(
 ): Promise<R> => {
   const response = await fetch(buildURL(url, options?.params), {
     ...options,
+    ...(options?.data ? { body: JSON.stringify(options.data) } : {}),
     method,
     headers: {
-      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json',
     },
   });
   if (!response.ok) {

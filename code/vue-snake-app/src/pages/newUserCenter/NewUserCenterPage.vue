@@ -1,5 +1,34 @@
-<!-- component -->
-<!-- component -->
+<script setup lang="ts">
+import { ref } from 'vue';
+
+import { apis } from '@/utils/apis';
+
+const id = ref(0);
+const username = ref('');
+const password = ref('');
+const preferredLang = ref('');
+const phone = ref('');
+
+//const router = useRouter();
+const handleSubmitChange = async () => {
+  try {
+    const data = await apis.user.update(id.value, {
+      ...(username.value !== '' ? { username: username.value } : {}),
+      ...(password.value !== '' ? { password: password.value } : {}),
+      ...(phone.value !== '' ? { phoneNumber: phone.value } : {}),
+      ...(preferredLang.value !== ''
+        ? { languageExcellent: preferredLang.value }
+        : {}),
+    });
+    console.log(data);
+    alert('修改成功');
+  } catch (error) {
+    console.log(error);
+    alert('修改数据有误');
+  }
+};
+</script>
+
 <template>
   <a
     href="#"
@@ -23,7 +52,7 @@
   </div>
   <div class="w-100 flex flex-row justify-between">
     <button class="text-2xl font-bold" @click="$router.go(-1)">Back</button>
-    <button class="text-2xl font-bold" @click="$router.push('./setting')">
+    <button class="text-2xl font-bold" @click="$router.push('/setting')">
       Setting
     </button>
   </div>
@@ -39,7 +68,7 @@
                 >write your id</label
               >
               <input
-                v-model.number="Id"
+                v-model.number="id"
                 type="number"
                 class="appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm" />
             </div>
@@ -51,7 +80,7 @@
               >
               <input
                 id="grid-text-1"
-                v-model="UserName"
+                v-model="username"
                 class="block w-full appearance-none rounded-md border border-gray-400 bg-white px-4 py-3 leading-tight text-gray-700 shadow-inner focus:border-gray-500 focus:outline-none"
                 type="text"
                 placeholder="Enter email"
@@ -63,7 +92,7 @@
                 >change your password</label
               >
               <input
-                v-model="Password"
+                v-model="password"
                 class="appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm" />
             </div>
 
@@ -143,7 +172,7 @@
                   >PreferredLang</label
                 >
                 <input
-                  v-model="PreferredLang"
+                  v-model="preferredLang"
                   class="block w-full appearance-none rounded-md border border-gray-400 bg-white px-4 py-3 leading-tight text-gray-700 shadow-inner focus:border-gray-500 focus:outline-none"
                   type="text"
                   required />
@@ -154,7 +183,7 @@
                   >phoneNumber</label
                 >
                 <input
-                  v-model="phoneNumber"
+                  v-model="phone"
                   class="h-20 w-full resize-none rounded-md border border-gray-400 bg-gray-100 px-3 py-2 font-medium leading-normal shadow-inner placeholder:text-gray-700 focus:bg-white focus:outline-none"
                   required />
               </div>
@@ -173,33 +202,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import axios from 'axios';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-const Id = ref(0);
-const UserName = ref('');
-const Password = ref('');
-const PreferredLang = ref('');
-const phoneNumber = ref('');
-
-//const router = useRouter();
-const handleSubmitChange = async () => {
-  axios
-    .post('http://101.132.165.23:8000/update?user_id=' + Id.value, {
-      username: UserName.value,
-      password: Password.value,
-      phone_Number: phoneNumber.value,
-      language_excellent: PreferredLang.value,
-    })
-    .then(function (response) {
-      console.log(response.data);
-      alert('修改成功');
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert('修改数据有误');
-    });
-};
-</script>

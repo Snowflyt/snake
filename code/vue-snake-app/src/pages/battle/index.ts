@@ -1,3 +1,3 @@
-import battle from './battle.vue';
+import BattlePage from './BattlePage.vue';
 
-export default battle;
+export default BattlePage;
