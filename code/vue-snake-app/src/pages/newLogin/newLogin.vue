@@ -26,6 +26,7 @@
             >
             <input
               id="email"
+              v-model="UserName"
               type="email"
               name="email"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
@@ -40,6 +41,7 @@
             >
             <input
               id="password"
+              v-model="Password"
               type="password"
               name="password"
               placeholder="••••••••"
@@ -71,7 +73,7 @@
           <button
             type="submit"
             class="border-blue w-full rounded-lg border-2 bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-            @click="$router.push('./home')">
+            @click="handleSubmitChange">
             Sign in
           </button>
           <p class="text-sm font-light text-gray-500 dark:text-gray-400">
@@ -79,7 +81,7 @@
             <b
               href="#"
               class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              @click="$router.push('/newLogin')"
+              @click="$router.push('/newRegister')"
               >Sign Up</b
             >
           </p>
@@ -88,3 +90,33 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import axios from 'axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+var UserName = ref('');
+var Password = ref('');
+var Telephone: number = ref('');
+var VerifyCode: number = ref('');
+const handleSubmitChange = async () => {
+  axios
+    .post('http://101.132.165.23:8000/login', {
+      username: UserName.value,
+      password: Password.value,
+    })
+    .then(function (response) {
+      console.log(response.data);
+      alert('登录成功');
+      setTimeout(() => {
+        router.push('./home');
+      }, 2000);
+    })
+    .catch(function (error) {
+      console.log(error);
+      alert('登录数据有误');
+    });
+};
+</script>

@@ -26,6 +26,7 @@
             >
             <input
               id="email"
+              v-model="UserName"
               type="email"
               name="email"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
@@ -40,6 +41,7 @@
             >
             <input
               id="password"
+              v-model="Password"
               type="password"
               name="password"
               placeholder="••••••••"
@@ -54,9 +56,23 @@
             >
             <input
               id="confirm-password"
-              type="confirm-password"
+              v-model="ConfirmedPassword"
+              type="password"
               name="confirm-password"
               placeholder="••••••••"
+              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
+              required="" />
+          </div>
+          <div>
+            <label
+              class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >PhoneNumber</label
+            >
+            <input
+              id="telephone"
+              v-model="phoneNumber"
+              name="telephone"
+              placeholder="12345678911"
               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm"
               required="" />
           </div>
@@ -83,8 +99,9 @@
             </div>
           </div>
           <button
-            type="submit"
-            class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            type="button"
+            class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            @click="handleSubmitChange">
             Create an account
           </button>
           <p class="text-sm font-light text-gray-500 dark:text-gray-400">
@@ -101,3 +118,36 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import axios from 'axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const UserName = ref('');
+const Password = ref('');
+const phoneNumber = ref('');
+const ConfirmedPassword = ref('');
+
+const router = useRouter();
+const handleSubmitChange = async () => {
+  if (Password.value != ConfirmedPassword.value) {
+    alert('密码不一致');
+    return;
+  }
+  axios
+    .post('http://101.132.165.23:8000/register', {
+      username: UserName.value,
+      password: Password.value,
+      phone_number: phoneNumber.value,
+    })
+    .then(function (response) {
+      console.log(response.data);
+      alert('注册成功');
+      router.push('./home');
+    })
+    .catch(function (error) {
+      console.log(error);
+      alert('注册数据有误');
+    });
+};
+</script>
