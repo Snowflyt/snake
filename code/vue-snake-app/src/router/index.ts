@@ -12,21 +12,21 @@ import NewLoginPage from '@/pages/newLogin';
 import NewRegisterPage from '@/pages/newRegister';
 import NewUserCenterPage from '@/pages/newUserCenter';
 import RegisterPage from '@/pages/register';
-import SettingPage from '@/pages/setting';
+import SettingsPage from '@/pages/settings';
 import ShopPage from '@/pages/shop';
 import UserCenterPage from '@/pages/userCenter';
 
 import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
+  { path: '/', component: HomePage },
+  { path: '/register', component: RegisterPage },
   { path: '/login', component: LoginPage },
   { path: '/combat', component: CombatPage },
   { path: '/user-center', component: UserCenterPage },
   { path: '/chat', component: ChatPage },
-  { path: '/', component: HomePage },
   { path: '/leisure', component: LeisurePage },
-  { path: '/register', component: RegisterPage },
-  { path: '/setting', component: SettingPage },
+  { path: '/settings', component: SettingsPage },
   { path: '/shop', component: ShopPage },
   { path: '/battle', component: BattlePage },
   { path: '/new-login', component: NewLoginPage },

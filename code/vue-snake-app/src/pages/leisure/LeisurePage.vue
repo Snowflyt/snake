@@ -10,7 +10,7 @@
         class=""
         src="../../assets/images/论坛/u206.svg"
         style="cursor: hand"
-        @click="$router.push('/setting')" />
+        @click="$router.push('/settings')" />
     </div>
     <div class="mt-16 flex flex-col">
       <div class="mb-16 flex justify-between">
