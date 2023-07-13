@@ -41,10 +41,12 @@ async def register(registration: Registration):
     elif len(phone_number) != 11 or validate_phone_number(phone_number):
         raise HTTPException(status_code=400, detail="电话号码格式不对,请检查")
     with Session(engine) as session:
-        existed = session.exec(select(User).where(User.username == username)).all()
+        existed = session.exec(select(User).where(
+            User.username == username)).all()
         if existed:
             raise HTTPException(status_code=400, detail="用户名已被注册,请换一个!")
-        user = User(username=username, password=password,phone_number=phone_number)
+        user = User(username=username, password=password,
+                    phone_number=phone_number)
         session.add(user)
         session.commit()
         session.refresh(user)

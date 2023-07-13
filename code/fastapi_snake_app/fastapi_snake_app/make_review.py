@@ -9,7 +9,7 @@ from fastapi_snake_app.main import app
 
 
 class ReviewMade(BaseModel):
-    id:int
+    id: int
     user_id: int
     username: str | None
     content: str
@@ -19,12 +19,13 @@ class ReviewMade(BaseModel):
 @app.post("/makeReviews")
 async def make_review(review_made: ReviewMade):
     with Session(engine) as session:
-        id = review_made.id
-        user_id=review_made.user_id
+        id = review_made.id  # pylint: disable=redefined-builtin, invalid-name
+        user_id = review_made.user_id
         username = review_made.username
         content = review_made.content
         submit_time = review_made.submit_time
-        review = Review(id=id,user_id=user_id, username=username, content=content,submit_time=submit_time)
+        review = Review(id=id, user_id=user_id, username=username,
+                        content=content, submit_time=submit_time)
         session.add(review)
         session.commit()
         session.refresh(review)
