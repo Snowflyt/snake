@@ -1,8 +1,7 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi_snake_app.db import engine
-from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session, select
 from fastapi_snake_app.db.user import User
 
@@ -12,14 +11,19 @@ from fastapi_snake_app.register import validate_phone_number
 
 # 定义更新用户数据的请求模型
 class UpdateUserRequest(BaseModel):
-    username: str|None
-    password: str|None
-    phone_number: str|None
-    language_excellent: str|None
+    username: str | None
+    password: str | None
+    phone_number: str | None
+    language_excellent: str | None
 
 
-@app.post('/update')
-async def update(user_id:int,update_user_request: UpdateUserRequest):
+@app.post('/update', description="用于更新用户个人信息", tags=['用户基本操作'])
+async def update(user_id: int, update_user_request: UpdateUserRequest
+= Body(..., example={"user_id": "用户id，必填格式要求是整型，如114514",
+                     "update_user_request": {"username": "用户名,选填,格式要求是字符串，默认值是None",
+                                             "password": "密码,选填，格式要求是字符串，默认值是None",
+                                             "phone_number": "电话号码,选填，格式要求是字符串，默认值是None",
+                                             "language_excellent": "用户当前擅长的语言，选填，格式要求是字符串，默认值为None"}})):
     with Session(engine) as session:
         statement = select(User).where(User.id == user_id)
         results = session.exec(statement)

@@ -1,6 +1,6 @@
 import re
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Body
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi_snake_app.db import engine
@@ -26,8 +26,11 @@ def validate_phone_number(phone_number):
         return False
 
 
-@app.post('/register')
-async def register(registration: Registration):
+@app.post('/register',description="向评论表中添加评论", tags=['用户基本操作'])
+async def register(registration: Registration = Body(..., example={"username": "用户名,必填，格式要求是字符串",
+                                                                   "password": "用户密码,必填，格式要求是字符串",
+                                                                   "phone_number": "用户注册用电话号码，必填，格式要求是字符串"
+                                                                   })):
     registration_dict = jsonable_encoder(registration)
     username = registration_dict.get('username', None)
     password = registration_dict.get('password', None)
@@ -44,7 +47,7 @@ async def register(registration: Registration):
         existed = session.exec(select(User).where(User.username == username)).all()
         if existed:
             raise HTTPException(status_code=400, detail="用户名已被注册,请换一个!")
-        user = User(username=username, password=password,phone_number=phone_number)
+        user = User(username=username, password=password, phone_number=phone_number)
         session.add(user)
         session.commit()
         session.refresh(user)
