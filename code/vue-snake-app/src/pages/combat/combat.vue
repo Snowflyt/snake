@@ -15,22 +15,16 @@
             src="../../assets/images/对战/u227.svg" />
         </div>
         <div class="w-100 flex flex-row justify-between">
-          <button
-            class="text-2xl font-bold"
-            @click="
-              () => {
-                $router.go(-1);
-              }
-            ">
+          <button class="text-2xl font-bold" @click="$router.go(-1)">
             返回
           </button>
-          <button class="text-2xl font-bold" @click="$router.push('./setting')">
+          <button class="text-2xl font-bold" @click="$router.push('/setting')">
             设置
           </button>
         </div>
         <div class="w-100 flex h-[30%] flex-row justify-center">
           <b class="text-2xl font-bold">房间号:</b>
-          <input v-model="RoomID" class="border-2 border-black" type="text" />
+          <input v-model="roomId" class="border-2 border-black" type="text" />
         </div>
       </el-header>
       <el-main class="h-[65%] bg-slate-300">
@@ -44,13 +38,13 @@
             class="h-[400] w-[45%] border-2 border-black"></canvas>
 
           <div class="w-[45%]">
-            <CodeEditor @changeHandle="changeHandle" />
+            <CodeEditor v-model="code" />
           </div>
         </div>
       </el-main>
       <el-footer>
         <div class="flex justify-center">
-          <el-button class="" @click="refreshAlltheTime">submit</el-button>
+          <el-button class="" @click="refreshAllTheTime">submit</el-button>
           <el-button class="" @click="stopFreshing">clear</el-button>
         </div>
       </el-footer>
@@ -59,14 +53,17 @@
 </template>
 
 <script setup lang="ts">
-import { createTextVNode, onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
-import CodeEditor from '../../components/CodeEditor';
-const message = ref('Drawing App');
-const painting = ref(false);
-const canvas = ref(null);
-const ctx = ref(null);
-var timeInterval = ref(null);
+import CodeEditor from '@/components/CodeEditor';
+
+const roomId = ref('');
+const code = ref('');
+
+const canvas = ref<HTMLCanvasElement | null>(null);
+const ctx = ref<CanvasRenderingContext2D | null>(null);
+const timeInterval = ref<number | null>(null);
+
 const colors = ref([
   '#000000',
   '#FF0000',
@@ -77,7 +74,7 @@ const colors = ref([
   '#00FFFF',
 ]);
 
-var snake = [
+const snake = [
   [2, 3],
   [2, 4],
   [2, 5],
@@ -89,20 +86,15 @@ var snake = [
 ];
 const gridWidth = 10;
 const gapWidth = 5;
-const row = 20;
-// const changeColor = (color) => {
-//   ctx.value.strokeStyle = color;
-// };
-// const clearCanvas = () => {
-//   ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
-// };
 
 onMounted(() => {
-  canvas.value = document.getElementById('canvas1');
+  canvas.value = document.querySelector('#canvas1') as HTMLCanvasElement;
   ctx.value = canvas.value.getContext('2d');
 });
 
 const drawSnake = () => {
+  if (!ctx.value) return;
+
   ctx.value.fillStyle = colors.value[0];
   console.log('herl');
   for (let i = 0; i < snake.length; i++) {
@@ -111,21 +103,25 @@ const drawSnake = () => {
   }
 };
 
-const refreshAlltheTime = () => {
+const refreshAllTheTime = () => {
   timeInterval.value = setInterval(() => {
     drawSnake();
   }, 1000);
 };
-const gerGridLeftUp = (g) => {
+const gerGridLeftUp = (g: number[]) => {
   return [g[0] * (gridWidth + gapWidth), g[1] * (gridWidth + gapWidth)];
 };
 
 const stopFreshing = () => {
-  clearInterval(timeInterval.value);
+  if (timeInterval.value) clearInterval(timeInterval.value);
 };
-const changeHandle = (e) => {
-  console.log('start sending');
-  console.log(e);
-  console.log('stop sending');
-};
+
+watch(
+  () => code.value,
+  (code) => {
+    console.log('start sending');
+    console.log(code);
+    console.log('stop sending');
+  },
+);
 </script>
