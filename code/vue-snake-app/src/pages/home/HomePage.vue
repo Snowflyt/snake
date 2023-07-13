@@ -6,24 +6,56 @@
           class=""
           src="../../assets/images/主页/u38.svg"
           style="cursor: hand"
+<<<<<<< HEAD:code/vue-snake-app/src/pages/home/home.vue
+          @click="
+            () => {
+              $router.push('./shop');
+            }
+          " />ShoppingMall
+=======
           @click="$router.push('/shop')" />商城
+>>>>>>> 6beca03979371e6b8a0d664957c644919e955502:code/vue-snake-app/src/pages/home/HomePage.vue
         <img
           class=""
           src="../../assets/images/主页/u39.svg"
           style="cursor: hand"
+<<<<<<< HEAD:code/vue-snake-app/src/pages/home/home.vue
+          @click="
+            () => {
+              $router.push('./newChatContent');
+            }
+          " />ChatRoom
+=======
           @click="$router.push('/chat')" />论坛
+>>>>>>> 6beca03979371e6b8a0d664957c644919e955502:code/vue-snake-app/src/pages/home/HomePage.vue
       </div>
       <div class="flex w-44 justify-around">
         <img
           class=""
           src="../../assets/images/主页/u34.svg"
           style="cursor: hand"
+<<<<<<< HEAD:code/vue-snake-app/src/pages/home/home.vue
+          @click="
+            () => {
+              $router.push('./newUserCenter');
+            }
+          " />UserCenter
+=======
           @click="$router.push('/user-center')" />用户
+>>>>>>> 6beca03979371e6b8a0d664957c644919e955502:code/vue-snake-app/src/pages/home/HomePage.vue
         <img
           class=""
           src="../../assets/images/主页/u35.svg"
           style="cursor: hand"
+<<<<<<< HEAD:code/vue-snake-app/src/pages/home/home.vue
+          @click="
+            () => {
+              $router.push('./setting');
+            }
+          " />Setting
+=======
           @click="$router.push('/settings')" />设置
+>>>>>>> 6beca03979371e6b8a0d664957c644919e955502:code/vue-snake-app/src/pages/home/HomePage.vue
       </div>
     </div>
     <div class="w-50 mt-5">

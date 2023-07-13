@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import BattlePage from '@/pages/battle';
 import ChatPage from '@/pages/chat';
 import CombatPage from '@/pages/combat';
+import GamePage from '@/pages/game';
 import HomePage from '@/pages/home';
 import LeisurePage from '@/pages/leisure';
 import LoginPage from '@/pages/login';
@@ -34,6 +35,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/new-user-center', component: NewUserCenterPage },
   { path: '/new-chat', component: NewChatPage },
   { path: '/new-chat-content', component: NewChatContentPage },
+  { path: '/game', component: GamePage },
 ];
 
 const router = createRouter({

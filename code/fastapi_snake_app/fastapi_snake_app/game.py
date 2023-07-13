@@ -1,8 +1,4 @@
-from typing import Literal, NoReturn, TypeAlias
-
-from fastapi import WebSocket
-
-from fastapi_snake_app.main import app
+from typing import Literal, TypeAlias
 
 games = {}
 # 颜色
@@ -119,8 +115,8 @@ def hit_snake_check(snake1: Snake, snake2: Snake):
             break
 
 
-
-def game_judgement(snake1: Snake, snake2: Snake):  # 首先检测两个蛇是否撞墙，是否撞到自己身体，更新dead状态，然后检测是否撞到别的蛇，更新状态
+# 首先检测两个蛇是否撞墙，是否撞到自己身体，更新dead状态，然后检测是否撞到别的蛇，更新状态
+def game_judgement(snake1: Snake, snake2: Snake):
     """
     4个int返回值，
     0：没有胜负发生

@@ -60,12 +60,18 @@ export interface UpdateUserResponse {
 }
 
 const userApi = {
-  async login(input: LoginInput): Promise<LoginInput> {
+  async login(input: LoginInput): Promise<LoginResponse> {
     return await request.post('/api/login', { data: input });
   },
 
   async register(input: RegisterInput): Promise<RegisterResponse> {
     return await request.post('/api/register', { data: snakeize(input) });
+  },
+
+  async findAll(): Promise<UserDto[]> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const users: any[] = await request.get('/api/users');
+    return users.map((user) => camelize(user) as UserDto);
   },
 
   async create(input: CreateUserInput): Promise<UserDto> {

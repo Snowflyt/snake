@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from fastapi_snake_app.db import engine
 from sqlmodel import Session, select
 from fastapi_snake_app.db.user import User
-
 from fastapi_snake_app.main import app
 from fastapi_snake_app.register import validate_phone_number
 
