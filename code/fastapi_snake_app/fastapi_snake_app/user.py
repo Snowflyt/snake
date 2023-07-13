@@ -41,7 +41,7 @@ UPLOAD_ROOT = MEDIA_ROOT / "uploads"
 class UploadRequest(BaseModel):
     id: int
     host: str = "http://101.132.165.23"
-    profile_base64:str
+    profile_base64: str
 
 
 def base64_to_image(base64_data):
@@ -57,15 +57,15 @@ def base64_to_image(base64_data):
 
         return image
     except Exception as e:
-        raise HTTPException(status_code=400,detail=f"Failed to convert Base64 to image: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to convert Base64 to image: {str(e)}")
 
 
 @app.post('/uploadProfile')
 async def uploadProfile(upload_request: UploadRequest) -> JSONResponse:
-    base64_data=UploadRequest.profile_base64
+    base64_data = upload_request.profile_base64
     image = base64_to_image(base64_data)
     host = upload_request.host
-    path = 'profile/' + str(id)+ ".jpg"
+    path = 'profile/' + str(id) + ".jpg"
     profile_path = host + "/" + path
     print(profile_path)
     image.save(profile_path)

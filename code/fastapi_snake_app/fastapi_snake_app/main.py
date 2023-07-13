@@ -20,6 +20,7 @@ importlib.import_module('fastapi_snake_app.register')
 importlib.import_module('fastapi_snake_app.update')
 importlib.import_module('fastapi_snake_app.make_review')
 importlib.import_module('fastapi_snake_app.review')
+importlib.import_module('fastapi_snake_app.chatter')
 
 # Import all routes
 importlib.import_module('fastapi_snake_app.note')

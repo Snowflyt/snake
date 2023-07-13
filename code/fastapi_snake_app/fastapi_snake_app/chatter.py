@@ -25,7 +25,7 @@ html = """
         <script>
             var client_id = Date.now()
             document.querySelector("#ws-id").textContent = client_id;
-            var ws = new WebSocket(`ws://localhost:8080/ws/${client_id}`);
+            var ws = new WebSocket(`ws://101.132.165.23:8000/ws/${client_id}`);
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
@@ -43,6 +43,8 @@ html = """
     </body>
 </html>
 """
+
+
 # 返回一段 HTML 代码给前端
 @app.get("/")
 async def get():
