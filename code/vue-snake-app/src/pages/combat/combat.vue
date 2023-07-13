@@ -19,12 +19,14 @@
             class="text-2xl font-bold"
             @click="
               () => {
-                $router.push('/userCenter');
+                $router.go(-1);
               }
             ">
             返回
           </button>
-          <button class="text-2xl font-bold">设置</button>
+          <button class="text-2xl font-bold" @click="$router.push('./setting')">
+            设置
+          </button>
         </div>
         <div class="w-100 flex h-[30%] flex-row justify-center">
           <b class="text-2xl font-bold">房间号:</b>

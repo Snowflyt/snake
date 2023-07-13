@@ -9,23 +9,7 @@ from fastapi import WebSocket
 from fastapi_snake_app.main import app
 
 
-@dataclass
-class RGB:
-    r: int  # pylint: disable=invalid-name
-    g: int  # pylint: disable=invalid-name
-    b: int  # pylint: disable=invalid-name
-
-    def __str__(self) -> str:
-        return f'rgb({self.r}, {self.g}, {self.b})'
-
-
-Color: TypeAlias = RGB
-
-# 颜色
-BLACK = RGB(0, 0, 0)
-WHITE = RGB(255, 255, 255)
-RED = RGB(255, 0, 0)
-GREEN = RGB(0, 255, 0)
+Color: TypeAlias = str
 
 
 class PointDto(TypedDict):
@@ -82,6 +66,7 @@ class Player:
 class SnakeDto(TypedDict):
     body_points: list[PointDto]
     player: PlayerDto
+    color: Color
 
 
 @dataclass
@@ -93,7 +78,8 @@ class SnakeInfo:
 
 
 class StepFunc(Protocol):
-    def __call__(self, snake: SnakeInfo, other_snakes: list[SnakeInfo], board: Board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+    def __call__(self, snake: SnakeInfo, other_snakes: list[SnakeInfo], board: Board) \
+            -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
         ...
 
 
@@ -104,7 +90,7 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
 
 class Snake:
-    def __init__(self, *, body_nodes: list[Point], color: Color = RGB(0, 0, 0),
+    def __init__(self, *, body_nodes: list[Point], color: Color,
                  board: Board, player: Player, code: str = DEFAULT_SNAKE_CODE) -> None:
         """
         :param body_nodes: 蛇身节点，蛇头为第一个节点
@@ -267,7 +253,8 @@ class Snake:
     def to_dto(self) -> SnakeDto:
         return {
             'body_points': [point.to_dto() for point in self._body_points],
-            'player': self._player.to_dto()
+            'player': self._player.to_dto(),
+            'color': self._color,
         }
 
     def to_info(self) -> SnakeInfo:
@@ -304,6 +291,7 @@ games: dict[str, Game] = {}
 class StartGameInput:
     room_id: str
     player: Player
+    snake_color: Color
 
 
 BOARD_WIDTH = 50
@@ -326,7 +314,7 @@ def start_game(ipt: StartGameInput) -> GameDto:
     if ipt.room_id not in games:
         board = Board(width=BOARD_WIDTH, height=BOARD_HEIGHT)
         snakes = [Snake(body_nodes=[head, after_head],
-                        board=board, player=ipt.player)]
+                        board=board, player=ipt.player, color=ipt.snake_color)]
         game = Game(snakes=snakes, board=board)
         games[ipt.room_id] = game
     else:
@@ -335,7 +323,7 @@ def start_game(ipt: StartGameInput) -> GameDto:
                   for snake in game.snakes):
             head, after_head = generate_snake_head_and_after_head()
         game.snakes.append(Snake(body_nodes=[head, after_head],
-                                 board=game.board, player=ipt.player))
+                                 board=game.board, player=ipt.player, color=ipt.snake_color))
 
     return game.to_dto()
 
