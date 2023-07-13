@@ -41,4 +41,4 @@ COPY . /app
 
 # Run Application
 EXPOSE 8000
-CMD [ "poetry", "run", "start" ]
+CMD [ "poetry", "run", "start:prod" ]
