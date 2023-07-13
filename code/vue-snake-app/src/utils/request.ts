@@ -38,9 +38,10 @@ const _request = async <R = unknown>(
 ): Promise<R> => {
   const response = await fetch(buildURL(url, options?.params), {
     ...options,
+    ...(options?.data ? { body: JSON.stringify(options.data) } : {}),
     method,
     headers: {
-      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json',
     },
   });
   if (!response.ok) {
