@@ -15,7 +15,7 @@ class Registration(BaseModel):
 
 
 @app.post('/register')
-async def login(registration: Registration):
+async def register(registration: Registration):
     registration_dict = jsonable_encoder(registration)
     username = registration_dict.get('username', None)
     password = registration_dict.get('password', None)

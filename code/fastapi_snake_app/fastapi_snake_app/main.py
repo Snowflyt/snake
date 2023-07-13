@@ -16,6 +16,8 @@ importlib.import_module('fastapi_snake_app.stage')
 importlib.import_module('fastapi_snake_app.play')
 importlib.import_module('fastapi_snake_app.login')
 importlib.import_module('fastapi_snake_app.logout')
+importlib.import_module('fastapi_snake_app.register')
+importlib.import_module('fastapi_snake_app.update')
 
 # Import all routes
 importlib.import_module('fastapi_snake_app.note')
@@ -43,7 +45,7 @@ def start() -> None:
     Launched with `poetry run start` at root level.
     """
 
-    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='0.0.0.0')  # type: ignore
+    uvicorn.run('fastapi_snake_app.main:app', reload=True, host='127.0.0.1')  # type: ignore
 
 
 def get_redoc_html(
