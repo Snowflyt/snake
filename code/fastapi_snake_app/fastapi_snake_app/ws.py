@@ -35,32 +35,71 @@ class Point:
 Direction: TypeAlias = Literal['left', 'right', 'up', 'down']
 
 
+class FoodDto(TypedDict):
+    point: PointDto
+    color: Color
+
+
+@dataclass
+class FoodInfo:
+    point: Point
+    color: Color
+
+
+@dataclass
+class Food:
+    point: Point
+    color: Color
+
+    def to_dto(self) -> FoodDto:
+        return FoodDto(point=self.point.to_dto(), color=self.color)
+
+    def to_info(self) -> FoodInfo:
+        return FoodInfo(point=self.point, color=self.color)
+
+
 class BoardDto(TypedDict):
     height: int
     width: int
+    foods: list[FoodDto]
+
+
+@dataclass
+class BoardInfo:
+    height: int
+    width: int
+    foods: list[FoodInfo]
 
 
 @dataclass
 class Board:
     height: int
     width: int
+    foods: list[Food]
 
     def to_dto(self) -> BoardDto:
-        return BoardDto(height=self.height, width=self.width)
+        return BoardDto(height=self.height, width=self.width,
+                        foods=[food.to_dto() for food in self.foods])
+
+    def to_info(self) -> BoardInfo:
+        return BoardInfo(height=self.height, width=self.width,
+                         foods=[food.to_info() for food in self.foods])
 
 
 class PlayerDto(TypedDict):
     id: str
     name: str
+    score: int
 
 
 @dataclass
 class Player:
     id: str  # pylint: disable=invalid-name
     name: str
+    score: int = 0
 
     def to_dto(self) -> PlayerDto:
-        return {'id': self.id, 'name': self.name}
+        return {'id': self.id, 'name': self.name, 'score': self.score}
 
 
 class SnakeDto(TypedDict):
@@ -78,13 +117,30 @@ class SnakeInfo:
 
 
 class StepFunc(Protocol):
-    def __call__(self, snake: SnakeInfo, other_snakes: list[SnakeInfo], board: Board) \
+    def __call__(self, snake: SnakeInfo, other_snakes: list[SnakeInfo], board: BoardInfo) \
             -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
         ...
 
 
 DEFAULT_SNAKE_CODE = '''
-def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
+def step(snake, other_snakes, board):
+    """
+    每一步的决策函数，返回值为 'TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT' 之一
+
+    :param snake: 自己的蛇，如 SnakeInfo(
+        body_points=[Point(x=0, y=0), Point(x=0, y=1), Point(x=0, y=2)],
+        head=Point(x=0, y=0),
+        direction='up',  # 'up', 'down', 'left', 'right'
+        player=Player(id='2j3lj66x', name='Alice'),
+    )
+    :param other_snakes: 其他蛇的信息，如 [SnakeInfo(...), SnakeInfo(...)]
+    :param board: 地图信息，如 BoardInfo(
+        width=20,
+        height=20,
+        foods=[Food(point=Point(x=1, y=1), color='#ff0000'), Food(...)],
+    )
+    """
+
     return 'KEEP_STRAIGHT'
 '''
 
@@ -166,7 +222,7 @@ class Snake:
             step_func = self.__parse_step_func(code)
             action = step_func(snake=self.to_info(),
                                other_snakes=[],
-                               board=self._board)
+                               board=self._board.to_info())
             if action not in ('TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'):
                 raise ValueError('Invalid code')
             self._code = code
@@ -185,12 +241,27 @@ class Snake:
         return self._body_points[0]
 
     @property
+    def tail(self) -> list[Point]:
+        return self._body_points[1:]
+
+    @property
     def body_points(self) -> list[Point]:
         return self._body_points
 
     @property
     def direction(self) -> Direction:
         return self._direction
+
+    @property
+    def tail_direction(self) -> Direction:
+        last, before_last = self._body_points[-1], self._body_points[-2]
+        if last.x == before_last.x:
+            if last.y < before_last.y:
+                return 'up'
+            return 'down'
+        if last.x < before_last.x:
+            return 'left'
+        return 'right'
 
     def _turn_left(self) -> None:
         if self._direction == 'up':
@@ -214,12 +285,27 @@ class Snake:
 
     @staticmethod
     def __parse_step_func(code: str) -> StepFunc:
-        globals_ = {
-            'Literal': Literal,
-        }
         locals_ = {}
-        exec(code, globals_, locals_)  # pylint: disable=exec-used
+        exec(code, {}, locals_)  # pylint: disable=exec-used
         return locals_['step']
+
+    @property
+    def next_head(self) -> Point:
+        if self._direction == 'up':
+            return Point(self.head.x, self.head.y - 1)
+        if self._direction == 'left':
+            return Point(self.head.x - 1, self.head.y)
+        if self._direction == 'down':
+            return Point(self.head.x, self.head.y + 1)
+        return Point(self.head.x + 1, self.head.y)
+
+    @property
+    def next_tail(self) -> list[Point]:
+        return self.next_body_points[1:]
+
+    @property
+    def next_body_points(self) -> list[Point]:
+        return [self.next_head] + self._body_points[:-1]
 
     def forward(self, other_snakes: list['Snake']) -> None:
         step_func = self.__parse_step_func(self._code)
@@ -227,28 +313,51 @@ class Snake:
         action: Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'] = step_func(
             snake=self.to_info(),
             other_snakes=[snake.to_info() for snake in other_snakes],
-            board=self._board)
+            board=self._board.to_info())
 
         if action == 'TURN_LEFT':
             self._turn_left()
         elif action == 'TURN_RIGHT':
             self._turn_right()
 
-        if self._direction == 'up':
-            self._body_points.insert(0, Point(self.head.x, self.head.y - 1))
-        elif self._direction == 'left':
-            self._body_points.insert(0, Point(self.head.x - 1, self.head.y))
-        elif self._direction == 'down':
-            self._body_points.insert(0, Point(self.head.x, self.head.y + 1))
+        self._body_points = self.next_body_points
+
+    def would_hit(self, other: 'Snake') -> bool:
+        return self.next_head in other.body_points
+
+    def would_hit_itself(self) -> bool:
+        return self.next_head in self.next_tail
+
+    def would_hit_wall(self) -> bool:
+        return (self.next_head.x <= 0 or self.next_head.x > self._board.width or
+                self.next_head.y <= 0 or self.next_head.y > self._board.height)
+
+    @property
+    def length(self) -> int:
+        return len(self._body_points)
+
+    @length.setter
+    def length(self, value: int) -> None:
+        if value < 2:
+            raise ValueError('Invalid length')
+
+        if value < self.length:
+            self._body_points = self._body_points[:value]
+            return
+
+        last = self._body_points[-1]
+        if self.tail_direction == 'up':
+            for i in range(value - self.length):
+                self._body_points.append(Point(last.x, last.y - i - 1))
+        elif self.tail_direction == 'left':
+            for i in range(value - self.length):
+                self._body_points.append(Point(last.x - i - 1, last.y))
+        elif self.tail_direction == 'down':
+            for i in range(value - self.length):
+                self._body_points.append(Point(last.x, last.y + i + 1))
         else:
-            self._body_points.insert(0, Point(self.head.x + 1, self.head.y))
-
-        self._body_points.pop()
-
-    def hits(self, other: 'Snake') -> bool:
-        if self.head in other.body_points:
-            return True
-        return False
+            for i in range(value - self.length):
+                self._body_points.append(Point(last.x + i + 1, last.y))
 
     def to_dto(self) -> SnakeDto:
         return {
@@ -266,6 +375,7 @@ class Snake:
 
 class GameDto(TypedDict):
     snakes: list[SnakeDto]
+    players: list[PlayerDto]
     board: BoardDto
     iteration: int
 
@@ -273,12 +383,36 @@ class GameDto(TypedDict):
 @dataclass
 class Game:
     snakes: list[Snake]
+    players: list[Player]
     board: Board
     iteration: int = 0
+
+    def generate_snake(self, *, color: Color, player: Player) -> Snake:
+        def generate_snake_head_and_after_head() -> tuple[Point, Point]:
+            head = Point(random.randint(3, BOARD_WIDTH - 3),
+                         random.randint(3, BOARD_HEIGHT - 3))
+            after_head = [Point(head.x, head.y + 1),
+                          Point(head.x, head.y - 1),
+                          Point(head.x + 1, head.y),
+                          Point(head.x - 1, head.y)][random.randint(0, 3)]
+            return head, after_head
+
+        head, after_head = generate_snake_head_and_after_head()
+
+        while any(head in snake.body_points or after_head in snake.body_points
+                  for snake in self.snakes):
+            head, after_head = generate_snake_head_and_after_head()
+
+        snake = Snake(body_nodes=[head, after_head],
+                      board=self.board, player=player, color=color)
+        self.snakes.append(snake)
+
+        return snake
 
     def to_dto(self) -> GameDto:
         return {
             'snakes': [snake.to_dto() for snake in self.snakes],
+            'players': [player.to_dto() for player in self.players],
             'board': self.board.to_dto(),
             'iteration': self.iteration,
         }
@@ -300,30 +434,16 @@ BOARD_HEIGHT = 50
 
 @app.post('/game')
 def start_game(ipt: StartGameInput) -> GameDto:
-    def generate_snake_head_and_after_head() -> tuple[Point, Point]:
-        head = Point(random.randint(3, BOARD_WIDTH - 3),
-                     random.randint(3, BOARD_HEIGHT - 3))
-        after_head = [Point(head.x, head.y + 1),
-                      Point(head.x, head.y - 1),
-                      Point(head.x + 1, head.y),
-                      Point(head.x - 1, head.y)][random.randint(0, 3)]
-        return head, after_head
-
-    head, after_head = generate_snake_head_and_after_head()
-
     if ipt.room_id not in games:
-        board = Board(width=BOARD_WIDTH, height=BOARD_HEIGHT)
-        snakes = [Snake(body_nodes=[head, after_head],
-                        board=board, player=ipt.player, color=ipt.snake_color)]
-        game = Game(snakes=snakes, board=board)
+        board = Board(width=BOARD_WIDTH, height=BOARD_HEIGHT, foods=[])
+        game = Game(snakes=[], players=[], board=board)
+        game.generate_snake(color=ipt.snake_color, player=ipt.player)
         games[ipt.room_id] = game
     else:
         game = games[ipt.room_id]
-        while any(head in snake.body_points or after_head in snake.body_points
-                  for snake in game.snakes):
-            head, after_head = generate_snake_head_and_after_head()
-        game.snakes.append(Snake(body_nodes=[head, after_head],
-                                 board=game.board, player=ipt.player, color=ipt.snake_color))
+        game.generate_snake(color=ipt.snake_color, player=ipt.player)
+
+    game.players.append(ipt.player)
 
     return game.to_dto()
 
@@ -373,10 +493,37 @@ async def update_code(room_id: str, payload: UpdateCodePayload) -> None:
             break
 
 
-async def update_game(game: Game) -> None:
+def update_game(game: Game) -> None:
     for snake in game.snakes:
-        other_snakes = filter(lambda s: s != snake,  # pylint: disable=cell-var-from-loop
-                              game.snakes)
+        other_snakes = [other_snake for other_snake in game.snakes
+                        if other_snake != snake]
+
+        # 碰撞检测
+        if (snake.would_hit_itself() or snake.would_hit_wall() or
+                any(snake.would_hit(other_snake) for other_snake in other_snakes)):
+            game.board.foods += [Food(point=point, color=snake.color)
+                                 for point in snake.body_points]
+            game.snakes.remove(snake)
+            game.generate_snake(color=snake.color, player=snake.player)
+            snake.player.score //= 2
+
+        # 吃食物
+        if snake.next_head in map(lambda food: food.point, game.board.foods):
+            snake.length += 1
+            game.board.foods = [food for food in game.board.foods
+                                if food.point != snake.next_head]
+            snake.player.score += 1
+
+        # 生成食物
+        if len(game.board.foods) < 10 and random.random() < 0.1:
+            point = Point(random.randint(3, BOARD_WIDTH - 3),
+                          random.randint(3, BOARD_HEIGHT - 3))
+            while (any(food.point == point for food in game.board.foods) or
+                   any(point in snake.body_points for snake in game.snakes)):
+                point = Point(random.randint(3, BOARD_WIDTH - 3),
+                              random.randint(3, BOARD_HEIGHT - 3))
+            game.board.foods.append(Food(point=point, color='#087f5b'))
+
         snake.forward(other_snakes=list(other_snakes))
 
 
@@ -408,7 +555,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
                     game.iteration += 1
                     last_iteration = game.iteration
 
-                    await update_game(game)
+                    update_game(game)
 
                 await websocket.send_json(UpdateGameMessage(
                     type='update-game',
