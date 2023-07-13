@@ -3,6 +3,11 @@
   <head>
     <title>Code Snake</title>
     <link
+      rel="icon"
+      href="https://images.freeimages.com/fic/images/icons/2711/free_icons_for_windows8_metro/512/python.png"
+      type="image/x-icon"
+    />
+    <link
       rel="stylesheet"
       href="//unpkg.com/element-plus@2.3.7/dist/index.css"
     />
@@ -27,10 +32,12 @@
           "@lezer/lr": "https://unpkg.com/@lezer/lr@1.3.9/dist/index.js",
           "@lezer/highlight": "https://unpkg.com/@lezer/highlight@1.1.6/dist/index.js",
           "@codemirror/lang-python": "https://unpkg.com/@codemirror/lang-python@6.1.3/dist/index.js",
-          "vue-codemirror": "https://unpkg.com/vue-codemirror@6.1.1/dist/vue-codemirror.esm.js"
+          "vue-codemirror": "https://unpkg.com/vue-codemirror@6.1.1/dist/vue-codemirror.esm.js",
+          "color2k": "https://cdn.skypack.dev/pin/color2k@v2.0.2-umwM7wpV18y9OMuBeCRE/mode=imports/optimized/color2k.js"
         }
       }
     </script>
+    <script src="https://unpkg.com/seedrandom@3.0.5/seedrandom.min.js"></script>
     <script src="https://cdn.tailwindcss.com/3.3.2"></script>
   </head>
 
@@ -38,7 +45,11 @@
     <div class="p-8 space-y-1 h-screen flex flex-col" id="app">
       <div class="flex flex-row mb-6">
         <h1 class="text-3xl flex-grow">Code Snake</h1>
-        <span class="text-gray-500">你好，{{ player.name }}</span>
+        <span class="text-gray-500"
+          >你好，<span :style="{ color: snakeColor }"
+            >{{ player.name }}</span
+          ></span
+        >
       </div>
       <div class="flex flex-row">
         <el-form-item class="w-full mr-3" label="房间号">
@@ -81,6 +92,7 @@
     </div>
 
     <script type="module">
+      import { getLuminance, toHex, rgba } from "color2k";
       import { createApp } from "vue";
       import ElementPlus from "element-plus";
       import { python } from "@codemirror/lang-python";
@@ -97,10 +109,33 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
       /** @type {WebSocket} */
       let ws;
 
+      /**
+       * @returns {Promise<string>}
+       */
       const generateRandomName = async () => {
         const res = await fetch("https://randomuser.me/api/?nat=us");
         const data = await res.json();
         return data.results[0].name.first;
+      };
+
+      /**
+       * 根据字符串生成亮度在 0.2 ~ 0.4 之间的颜色
+       * @param {string} string
+       * @returns {string}
+       */
+      const generateColor = (string) => {
+        const rng = new Math.seedrandom(string);
+
+        /** @type {string} */
+        let color;
+        do {
+          const r = Math.floor(rng() * 255);
+          const g = Math.floor(rng() * 255);
+          const b = Math.floor(rng() * 255);
+          color = rgba(r, g, b, 1);
+        } while (getLuminance(color) > 0.4 || getLuminance(color) < 0.2);
+
+        return toHex(color);
       };
 
       /**
@@ -112,7 +147,7 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
        */
 
       /**
-       * @typedef {{ body_points: Point[]; player: PlayerDto }} SnakeDto
+       * @typedef {{ body_points: Point[]; player: PlayerDto; color: string }} SnakeDto
        */
 
       /**
@@ -149,12 +184,15 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
       createApp({
         data() {
+          const playerId = Math.random().toString(36).substr(2);
+
           return {
             roomId: "room1",
             player: {
-              id: Math.random().toString(36).substr(2),
+              id: playerId,
               name: "",
             },
+            snakeColor: generateColor(playerId),
             code: DEFAULT_CODE.trimStart(),
 
             isGaming: false,
@@ -168,13 +206,14 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
         },
 
         mounted() {
-          console.log("玩家 ID:", this.player.id);
+          console.info(`Player ID: ${this.player.id}`);
+          console.info(`Snake Color: ${this.snakeColor}`);
 
           this.pixelWidth = this.$refs.canvas.width / 50;
           this.pixelHeight = this.$refs.canvas.height / 50;
 
-          this.drawPixel({ x: 1, y: 1 });
-          this.drawPixel({ x: 2, y: 1 });
+          this.drawPixel({ x: 1, y: 1, type: 'small' });
+          this.drawPixel({ x: 1, y: 2, type: 'small' });
 
           (async () => {
             this.player.name = await generateRandomName();
@@ -192,17 +231,30 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
         methods: {
           /**
-           * @param {Point} point
+           * @param {Point & { color?: string; type?: 'normal' | 'small' }} options
            */
-          drawPixel(point) {
+          drawPixel(options) {
+            const { color = this.snakeColor, type = "normal" } = options;
+
             /** @type {HTMLCanvasElement} */
             const canvas = this.$refs.canvas;
             const ctx = canvas.getContext("2d");
 
-            ctx.fillStyle = "black";
+            ctx.fillStyle = color;
+
+            if (type === "small") {
+              ctx.fillRect(
+                (options.x - 1) * this.pixelWidth + this.pixelWidth / 2 - 1,
+                (options.y - 1) * this.pixelHeight + this.pixelHeight / 2 - 1,
+                1,
+                1,
+              );
+              return;
+            }
+
             ctx.fillRect(
-              (point.x - 1) * this.pixelWidth,
-              (point.y - 1) * this.pixelHeight,
+              (options.x - 1) * this.pixelWidth,
+              (options.y - 1) * this.pixelHeight,
               this.pixelWidth,
               this.pixelHeight
             );
@@ -220,7 +272,7 @@ def step(snake, other_snakes, board) -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP
 
             for (const snake of snakes) {
               for (const point of snake.body_points) {
-                this.drawPixel(point);
+                this.drawPixel({ ...point, color: snake.color });
               }
             }
           },
