@@ -1,5 +1,7 @@
+import base64
 import hashlib
-
+import io
+from PIL import Image
 from anyio import Path
 from fastapi import HTTPException, Request, File
 from fastapi.responses import JSONResponse
@@ -39,21 +41,34 @@ UPLOAD_ROOT = MEDIA_ROOT / "uploads"
 class UploadRequest(BaseModel):
     id: int
     host: str = "http://101.132.165.23"
+    profile_base64:str
+
+
+def base64_to_image(base64_data):
+    try:
+        # 解码 Base64 数据
+        decoded_data = base64.b64decode(base64_data)
+
+        # 创建 BytesIO 对象
+        image_stream = io.BytesIO(decoded_data)
+
+        # 打开图像
+        image = Image.open(image_stream)
+
+        return image
+    except Exception as e:
+        raise HTTPException(status_code=400,detail=f"Failed to convert Base64 to image: {str(e)}")
 
 
 @app.post('/uploadProfile')
-async def uploadProfile(upload_request: UploadRequest, file: bytes = File(...)) -> JSONResponse:
-    if len(file) > LIMIT_SIZE:
-        raise HTTPException(status_code=400, detail="每个文件都不能大于5M")
-        # 使用md5作为文件名，以免同一个文件多次写入
-    filename = hashlib.md5(file).hexdigest() + ".jpg"
-    if not await (fpath := UPLOAD_ROOT / filename).exists():
-        if not await fpath.parent.exists():
-            await fpath.parent.mkdir(parents=True)
-        await fpath.write_bytes(file)
+async def uploadProfile(upload_request: UploadRequest) -> JSONResponse:
+    base64_data=UploadRequest.profile_base64
+    image = base64_to_image(base64_data)
     host = upload_request.host
-    path = 'profile' + hashlib.md5(file).hexdigest() + ".jpg"
+    path = 'profile/' + str(id)+ ".jpg"
     profile_path = host + "/" + path
+    print(profile_path)
+    image.save(profile_path)
     with Session(engine) as session:
         statement = select(User).where(User.id == upload_request.id)
         results = session.exec(statement)
