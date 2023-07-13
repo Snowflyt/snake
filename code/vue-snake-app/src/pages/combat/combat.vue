@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
-import CodeEditor from '../../components/CodeEditor';
+import CodeEditor from '@/components/CodeEditor';
 
 const roomId = ref('');
 const code = ref('');
@@ -74,7 +74,7 @@ const colors = ref([
   '#00FFFF',
 ]);
 
-var snake = [
+const snake = [
   [2, 3],
   [2, 4],
   [2, 5],
