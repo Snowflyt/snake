@@ -36,11 +36,22 @@
             <div class="mb-6 w-full px-3 md:w-full">
               <label
                 class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
+                >write your id</label
+              >
+              <input
+                v-model.number="Id"
+                type="number"
+                class="appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm" />
+            </div>
+            <div class="mb-6 w-full px-3 md:w-full">
+              <label
+                class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
                 for="grid-text-1"
                 >email address</label
               >
               <input
                 id="grid-text-1"
+                v-model="UserName"
                 class="block w-full appearance-none rounded-md border border-gray-400 bg-white px-4 py-3 leading-tight text-gray-700 shadow-inner focus:border-gray-500 focus:outline-none"
                 type="text"
                 placeholder="Enter email"
@@ -49,19 +60,14 @@
             <div class="mb-6 w-full px-3 md:w-full">
               <label
                 class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
-                >password</label
+                >change your password</label
               >
-              <button
-                class="appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm">
-                change your password
-              </button>
+              <input
+                v-model="Password"
+                class="appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm" />
             </div>
-            <div class="mb-6 w-full px-3 md:w-full">
-              <label
-                class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
-                >pick your country</label
-              >
-              <div class="relative inline-block w-full shrink">
+
+            <!-- <div class="relative inline-block w-full shrink">
                 <select
                   class="block w-full appearance-none rounded border border-gray-400 bg-white px-4 py-2 pr-8 text-gray-600 shadow-inner">
                   <option>choose ...</option>
@@ -81,8 +87,8 @@
                   </svg>
                 </div>
               </div>
-            </div>
-            <div class="mb-6 w-full px-3 md:w-full">
+            </div> -->
+            <!-- <div class="mb-6 w-full px-3 md:w-full">
               <label
                 class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
                 >fav language</label
@@ -106,7 +112,7 @@
                   </svg>
                 </div>
               </div>
-            </div>
+            </div> -->
             <div class="personal w-full border-t border-gray-400 pt-4">
               <h2 class="text-2xl text-gray-900">Personal info:</h2>
               <div class="mt-4 flex items-center justify-between">
@@ -134,9 +140,10 @@
               <div class="mb-6 w-full px-3 md:w-full">
                 <label
                   class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
-                  >user name</label
+                  >PreferredLang</label
                 >
                 <input
+                  v-model="PreferredLang"
                   class="block w-full appearance-none rounded-md border border-gray-400 bg-white px-4 py-3 leading-tight text-gray-700 shadow-inner focus:border-gray-500 focus:outline-none"
                   type="text"
                   required />
@@ -144,16 +151,18 @@
               <div class="mb-6 w-full px-3 md:w-full">
                 <label
                   class="mb-2 block text-xs font-bold uppercase tracking-wide text-gray-700"
-                  >Bio</label
+                  >phoneNumber</label
                 >
-                <textarea
+                <input
+                  v-model="phoneNumber"
                   class="h-20 w-full resize-none rounded-md border border-gray-400 bg-gray-100 px-3 py-2 font-medium leading-normal shadow-inner placeholder:text-gray-700 focus:bg-white focus:outline-none"
-                  required></textarea>
+                  required />
               </div>
               <div class="flex justify-end">
                 <button
                   class="mr-3 appearance-none rounded-md border border-gray-400 bg-gray-200 px-2 py-1 text-gray-900 shadow-sm"
-                  type="submit">
+                  type="button"
+                  @click="handleSubmitChange">
                   save changes
                 </button>
               </div>
@@ -164,3 +173,33 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import axios from 'axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const Id = ref(0);
+const UserName = ref('');
+const Password = ref('');
+const PreferredLang = ref('');
+const phoneNumber = ref('');
+
+//const router = useRouter();
+const handleSubmitChange = async () => {
+  axios
+    .post('http://101.132.165.23:8000/update?user_id=' + Id.value, {
+      username: UserName.value,
+      password: Password.value,
+      phone_Number: phoneNumber.value,
+      language_excellent: PreferredLang.value,
+    })
+    .then(function (response) {
+      console.log(response.data);
+      alert('修改成功');
+    })
+    .catch(function (error) {
+      console.log(error);
+      alert('修改数据有误');
+    });
+};
+</script>

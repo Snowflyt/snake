@@ -7,6 +7,8 @@ import Combat from '../pages/combat';
 import Home from '../pages/home';
 import Leisure from '../pages/leisure';
 import Login from '../pages/login';
+import NewChat from '../pages/newChat';
+import NewChatContent from '../pages/newChatContent';
 import NewLogin from '../pages/newLogin';
 import NewRegister from '../pages/newRegister';
 import NewUserCenter from '../pages/newUserCenter';
@@ -30,6 +32,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/newLogin', component: NewLogin },
   { path: '/newRegister', component: NewRegister },
   { path: '/newUserCenter', component: NewUserCenter },
+  { path: '/newChat', component: NewChat },
+  { path: '/newChatContent', component: NewChatContent },
 ];
 
 const router = createRouter({

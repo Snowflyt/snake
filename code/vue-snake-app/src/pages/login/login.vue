@@ -100,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import axios from 'axios';
 import { ref } from 'vue';
 
 import sampleApi from '../../apis/sample';
@@ -108,18 +109,22 @@ var Password = ref('');
 var Telephone: number = ref('');
 var VerifyCode: number = ref('');
 const handleSubmitChange = async () => {
-  try {
-    const data = {
+  axios
+    .post('http://101.132.165.23:8000/login', {
       username: UserName.value,
       password: Password.value,
-    };
-    console.log(data);
-    const res = await sampleApi.login(data);
-    res.then((result) => {
-      console.log('result:', result);
+    })
+    .then(function (response) {
+      console.log(response.data);
+      alert('登录成功');
+      setTimeout(() => {
+        $router.push('./home');
+      }, 2000);
+    })
+    .catch(function (error) {
+      console.log(error);
+      alert('登录数据有误');
     });
-  } catch {
-    alert('信息填写错误');
-  }
 };
+
 </script>
