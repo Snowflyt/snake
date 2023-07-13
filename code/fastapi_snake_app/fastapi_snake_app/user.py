@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from fastapi_snake_app.db import engine
@@ -15,6 +16,9 @@ async def read_users() -> list[User]:
 @app.post('/user')
 async def create_user(user: User):
     with Session(engine) as session:
+        existed = session.exec(select(User).where(User.username == user.username)).all()
+        if existed:
+            raise HTTPException(status_code=400, detail="用户名已被注册,请换一个!")
         session.add(user)
         session.commit()
         session.refresh(user)
