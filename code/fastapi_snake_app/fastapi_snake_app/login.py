@@ -17,7 +17,7 @@ class Credential(BaseModel):
 def login_check(username: str, password: str) -> bool:
     with Session(engine) as session:
         pwd = session.exec(select(User).where(User.username == username)).one()
-        return pwd[2] == password
+        return pwd.password == password
 
 
 @app.post('/login')
