@@ -48,7 +48,7 @@ html = """
 
 
 # 返回一段 HTML 代码给前端
-@app.get("/chatter")
+@app.get("/chatter",description="将聊天室内容发送给前端", tags=['聊天室基本操作'])
 async def get():
     return HTMLResponse(html)
 
