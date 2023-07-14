@@ -4,11 +4,12 @@ import { ElMessage } from 'element-plus';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { Codemirror } from 'vue-codemirror';
 
+import { request } from '@/utils/request';
+
 import { apis } from '../../utils/apis';
 import { generateColor } from '../../utils/color';
 
-const HOST = '101.132.165.23';
-const PORT = 8000;
+import type { FoodDto, Point, SnakeDto } from '@/@types/game';
 
 const DEFAULT_CODE = `
 def step(snake, other_snakes, board):
@@ -32,75 +33,13 @@ def step(snake, other_snakes, board):
     return 'KEEP_STRAIGHT'
 `;
 
-let ws: WebSocket;
+let wsClient: ReturnType<typeof apis.ws.game.createClient>;
 
 const generateRandomName = async (): Promise<string> => {
-  const res = await fetch('https://randomuser.me/api/?nat=us');
-  const data = await res.json();
+  const data: { results: Array<{ name: { first: string } }> } =
+    await request.get('https://randomuser.me/api/?nat=us');
   return data.results[0].name.first;
 };
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface PlayerDto {
-  id: string;
-  name: string;
-  score: number;
-}
-
-interface SnakeDto {
-  body_points: Point[];
-  player: PlayerDto;
-  color: string;
-}
-
-interface FoodDto {
-  point: Point;
-  color: string;
-}
-
-interface BoardDto {
-  width: number;
-  height: number;
-  foods: FoodDto[];
-}
-
-interface GameDto {
-  snakes: SnakeDto[];
-  players: PlayerDto[];
-  board: BoardDto;
-}
-
-interface UpdateGamePayload {
-  game: GameDto;
-}
-
-interface UpdateGameMessage {
-  type: 'update-game';
-  payload: UpdateGamePayload;
-}
-
-interface CodeUpdateConfirmMessage {
-  type: 'code-update-confirm';
-  payload: '';
-}
-
-type IncomingMessage = UpdateGameMessage | CodeUpdateConfirmMessage;
-
-interface UpdateCodePayload {
-  player_id: string;
-  code: string;
-}
-
-interface UpdateCodeMessage {
-  type: 'update-code';
-  payload: UpdateCodePayload;
-}
-
-// type OutgoingMessage = UpdateCodeMessage;
 
 const playerId = Math.random().toString(36).substr(2);
 
@@ -183,7 +122,7 @@ const drawSnakes = (snakes: SnakeDto[]) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (const snake of snakes) {
-    for (const point of snake.body_points) {
+    for (const point of snake.bodyPoints) {
       drawPixel({ ...point, color: snake.color });
     }
   }
@@ -220,10 +159,8 @@ const handleStartGame = async () => {
     snakeColor: snakeColor,
   });
 
-  ws = new WebSocket(`ws://${HOST}:${PORT}/game/${roomId.value}`);
-  ws.onmessage = (event) => {
-    const { payload, type }: IncomingMessage = JSON.parse(event.data);
-
+  wsClient = apis.ws.game.createClient({ roomId: roomId.value });
+  wsClient.on('message', ({ payload, type }) => {
     if (type === 'update-game') {
       drawSnakes(payload.game.snakes);
       drawFoods(payload.game.board.foods);
@@ -239,29 +176,28 @@ const handleStartGame = async () => {
       ElMessage.success('代码已更新');
       return;
     }
-  };
-  ws.onopen = () => {
+  });
+  wsClient.on('open', () => {
     handleUpdateCode(code.value);
-  };
+  });
 };
 
 /**
  * 结束游戏
  */
 const handleStopGame = async () => {
-  ws.close();
+  wsClient.close();
   await apis.game.quit({ roomId: roomId.value, playerId: player.id });
 };
 
 const handleUpdateCode = (code: string) => {
-  const message: UpdateCodeMessage = {
+  wsClient.send({
     type: 'update-code',
     payload: {
-      player_id: player.id,
+      playerId: player.id,
       code,
     },
-  };
-  ws.send(JSON.stringify(message));
+  });
 };
 </script>
 

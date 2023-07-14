@@ -1,41 +1,8 @@
 import { request } from '@/utils/request';
 import { camelize, snakeize } from '@/utils/snakeCamel';
 
+import type { GameDto } from '@/@types/game';
 import type { Snakeize } from '@/@types/utils';
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface PlayerDto {
-  id: string;
-  name: string;
-  score: number;
-}
-
-interface SnakeDto {
-  bodyPoints: Point[];
-  player: PlayerDto;
-  color: string;
-}
-
-interface FoodDto {
-  point: Point;
-  color: string;
-}
-
-interface BoardDto {
-  width: number;
-  height: number;
-  foods: FoodDto[];
-}
-
-interface GameDto {
-  snakes: SnakeDto[];
-  players: PlayerDto[];
-  board: BoardDto;
-}
 
 export interface JoinGameInput {
   roomId: string;
