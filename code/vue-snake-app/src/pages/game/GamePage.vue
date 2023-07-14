@@ -10,24 +10,24 @@ const PORT = 8000;
 
 const DEFAULT_CODE = `
 def step(snake, other_snakes, board):
-"""
-每一步的决策函数，返回值为 'TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT' 之一
+    """
+    每一步的决策函数，返回值为 'TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT' 之一
 
-:param snake: 自己的蛇，如 SnakeInfo(
-    body_points=[Point(x=0, y=0), Point(x=0, y=1), Point(x=0, y=2)],
-    head=Point(x=0, y=0),
-    direction='up',  # 'up', 'down', 'left', 'right'
-    player=Player(id='2j3lj66x', name='Alice'),
-)
-:param other_snakes: 其他蛇的信息，如 [SnakeInfo(...), SnakeInfo(...)]
-:param board: 地图信息，如 BoardInfo(
-    width=20,
-    height=20,
-    foods=[Food(point=Point(x=1, y=1), color='#ff0000'), Food(...)],
-)
-"""
+    :param snake: 自己的蛇，如 SnakeInfo(
+        body_points=[Point(x=0, y=0), Point(x=0, y=1), Point(x=0, y=2)],
+        head=Point(x=0, y=0),
+        direction='up',  # 'up', 'down', 'left', 'right'
+        player=Player(id='2j3lj66x', name='Alice'),
+    )
+    :param other_snakes: 其他蛇的信息，如 [SnakeInfo(...), SnakeInfo(...)]
+    :param board: 地图信息，如 BoardInfo(
+        width=20,
+        height=20,
+        foods=[Food(point=Point(x=1, y=1), color='#ff0000'), Food(...)],
+    )
+    """
 
-return 'KEEP_STRAIGHT'
+    return 'KEEP_STRAIGHT'
 `;
 
 let ws: WebSocket;
@@ -264,25 +264,23 @@ const handleUpdateCode = (code: string) => {
 
 <template>
   <div class="flex h-screen flex-col space-y-1 p-8">
-    <div class="w-100 flex  flex-row justify-between">
-          <img
-            id="u226_img"
-            class="inline h-[80%]"
-            src="../../assets/images/对战/u226.svg" />
+    <div class="w-100 flex flex-row justify-between">
+      <img
+        id="u226_img"
+        class="inline h-[80%]"
+        src="../../assets/images/对战/u226.svg" />
 
-          <img
-            id="u227_img"
-            class="inline"
-            src="../../assets/images/对战/u227.svg" />
-        </div>
-        <div class="w-100 flex flex-row justify-between">
-          <button class="text-2xl font-bold" @click="$router.go(-1)">
-            返回
-          </button>
-          <button class="text-2xl font-bold" @click="$router.push('/settings')">
-            设置
-          </button>
-        </div>
+      <img
+        id="u227_img"
+        class="inline"
+        src="../../assets/images/对战/u227.svg" />
+    </div>
+    <div class="w-100 flex flex-row justify-between">
+      <button class="text-2xl font-bold" @click="$router.go(-1)">返回</button>
+      <button class="text-2xl font-bold" @click="$router.push('/settings')">
+        设置
+      </button>
+    </div>
     <div class="mb-6 flex flex-row">
       <h1 class="grow text-3xl">Code Snake</h1>
       <span class="text-gray-500"
