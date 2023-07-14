@@ -28,7 +28,7 @@
         <div class="mb-8 flex w-96 items-center justify-around">
           <div
             class="flex items-center justify-center rounded-xl bg-gray-300 p-2"
-            @click="$router.push('/combat')">
+            @click="$router.push('/game')">
             单人排位
           </div>
           <div
