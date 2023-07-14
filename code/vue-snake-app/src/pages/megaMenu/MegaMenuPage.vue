@@ -33,14 +33,6 @@
                 Sign up
               </button>
             </div>
-            <div
-              id="mega-menu-icons"
-              class="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto">
-              <ul>
-                class="mt-4 flex flex-col font-medium md:mt-0 md:flex-row
-                md:space-x-8">
-              </ul>
-            </div>
           </div>
         </nav>
         <h1
