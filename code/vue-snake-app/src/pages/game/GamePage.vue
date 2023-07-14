@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { python } from '@codemirror/lang-python';
-import { watch, reactive, ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { Codemirror } from 'vue-codemirror';
 
+import { apis } from '../../utils/apis';
 import { generateColor } from '../../utils/color';
 
 const HOST = '101.132.165.23';
@@ -81,7 +83,12 @@ interface UpdateGameMessage {
   payload: UpdateGamePayload;
 }
 
-type IncomingMessage = UpdateGameMessage;
+interface CodeUpdateConfirmMessage {
+  type: 'code-update-confirm';
+  payload: '';
+}
+
+type IncomingMessage = UpdateGameMessage | CodeUpdateConfirmMessage;
 
 interface UpdateCodePayload {
   player_id: string;
@@ -93,8 +100,7 @@ interface UpdateCodeMessage {
   payload: UpdateCodePayload;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type OutgoingMessage = UpdateCodeMessage;
+// type OutgoingMessage = UpdateCodeMessage;
 
 const playerId = Math.random().toString(36).substr(2);
 
@@ -208,17 +214,11 @@ const handleToggleGame = () => {
  * 开始游戏
  */
 const handleStartGame = async () => {
-  await fetch(`http://${HOST}:${PORT}/game`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      room_id: roomId.value,
-      player: player,
-      snake_color: snakeColor,
-    }),
-  }).then((res) => res.json());
+  await apis.game.join({
+    roomId: roomId.value,
+    player: player,
+    snakeColor: snakeColor,
+  });
 
   ws = new WebSocket(`ws://${HOST}:${PORT}/game/${roomId.value}`);
   ws.onmessage = (event) => {
@@ -232,6 +232,12 @@ const handleStartGame = async () => {
       )?.score;
       if (!newScore) return;
       player.score = newScore;
+      return;
+    }
+
+    if (type === 'code-update-confirm') {
+      ElMessage.success('代码已更新');
+      return;
     }
   };
   ws.onopen = () => {
@@ -244,10 +250,7 @@ const handleStartGame = async () => {
  */
 const handleStopGame = async () => {
   ws.close();
-
-  const url = new URL(`http://${HOST}:${PORT}/game/${roomId.value}`);
-  url.searchParams.append('player_id', player.id);
-  await fetch(url, { method: 'DELETE' });
+  await apis.game.quit({ roomId: roomId.value, playerId: player.id });
 };
 
 const handleUpdateCode = (code: string) => {

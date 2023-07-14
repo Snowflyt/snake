@@ -18,14 +18,30 @@ export const snakeToCamel = <S extends string>(str: S): SnakeToCamel<S> =>
  * @param obj key 为 camelCase 的对象
  * @returns key 为 snake_case 的对象
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const camelize = <T extends Record<string, any>>(
+export const camelize = <
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends Array<Record<string, any>> | Record<string, any>,
+>(
   obj: T,
+  { deep = true }: { deep?: boolean } = {},
 ): Camelize<T> => {
+  if (Array.isArray(obj))
+    return obj.map((item) => camelize(item)) as Camelize<T>;
+
   const result = {} as Camelize<T>;
   for (const [key, value] of Object.entries(obj)) {
     const newKey = snakeToCamel(key) as keyof Camelize<T>;
-    result[newKey] = value as Camelize<T>[keyof Camelize<T>];
+    let newValue: Camelize<T>[keyof Camelize<T>] = value;
+    if (deep && typeof value === 'object' && value !== null) {
+      if (Array.isArray(value)) {
+        newValue = value.map((item) =>
+          camelize(item),
+        ) as Camelize<T>[keyof Camelize<T>];
+      } else {
+        newValue = camelize(value) as Camelize<T>[keyof Camelize<T>];
+      }
+    }
+    result[newKey] = newValue;
   }
   return result;
 };
@@ -43,14 +59,30 @@ export const camelToSnake = <S extends string>(str: S) =>
  * @param obj key 为 snake_case 的对象
  * @returns key 为 camelCase 的对象
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const snakeize = <T extends Record<string, any>>(
+export const snakeize = <
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends Array<Record<string, any>> | Record<string, any>,
+>(
   obj: T,
+  { deep = true }: { deep?: boolean } = {},
 ): Snakeize<T> => {
+  if (Array.isArray(obj))
+    return obj.map((item) => snakeize(item)) as Snakeize<T>;
+
   const result = {} as Snakeize<T>;
   for (const [key, value] of Object.entries(obj)) {
     const newKey = camelToSnake(key) as keyof Snakeize<T>;
-    result[newKey] = value as Snakeize<T>[keyof Snakeize<T>];
+    let newValue: Snakeize<T>[keyof Snakeize<T>] = value;
+    if (deep && typeof value === 'object' && value !== null) {
+      if (Array.isArray(value)) {
+        newValue = value.map((item) =>
+          snakeize(item),
+        ) as Snakeize<T>[keyof Snakeize<T>];
+      } else {
+        newValue = snakeize(value) as Snakeize<T>[keyof Snakeize<T>];
+      }
+    }
+    result[newKey] = newValue;
   }
   return result;
 };

@@ -1,5 +1,7 @@
 import { request } from '@/utils/request';
-import { snakeize, camelize } from '@/utils/snakeCamel';
+import { camelize, snakeize } from '@/utils/snakeCamel';
+
+import type { Snakeize } from '@/@types/utils';
 
 export interface UserDto {
   id: number;
@@ -61,7 +63,7 @@ export interface UpdateUserResponse {
 
 const userApi = {
   async login(input: LoginInput): Promise<LoginResponse> {
-    return await request.post('/api/login', { data: input });
+    return await request.post('/api/login', { data: snakeize(input) });
   },
 
   async register(input: RegisterInput): Promise<RegisterResponse> {
@@ -69,17 +71,15 @@ const userApi = {
   },
 
   async findAll(): Promise<UserDto[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const users: any[] = await request.get('/api/users');
-    return users.map((user) => camelize(user) as UserDto);
+    const users = await request.get<Snakeize<UserDto[]>>('/api/users');
+    return camelize(users);
   },
 
   async create(input: CreateUserInput): Promise<UserDto> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const user: any = await request.post('/api/user', {
+    const user = await request.post<Snakeize<UserDto>>('/api/user', {
       data: snakeize(input),
     });
-    return camelize(user) as UserDto;
+    return camelize(user);
   },
 
   async update(
