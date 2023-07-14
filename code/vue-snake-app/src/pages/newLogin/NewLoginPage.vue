@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -16,11 +17,11 @@ const handleSubmitChange = async () => {
       password: password.value,
     });
     console.log(response);
-    alert('登录成功');
+    ElMessage.success('登录成功');
     router.push('/home');
   } catch (error) {
     console.log(error);
-    alert('登录数据有误');
+    ElMessage.error('登录数据有误');
   }
 };
 </script>

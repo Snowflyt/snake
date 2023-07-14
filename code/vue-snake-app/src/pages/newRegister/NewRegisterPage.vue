@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -12,7 +13,7 @@ const confirmedPassword = ref('');
 const router = useRouter();
 const handleSubmitChange = async () => {
   if (password.value != confirmedPassword.value) {
-    alert('密码不一致');
+    ElMessage.error('密码不一致');
     return;
   }
 
@@ -23,11 +24,11 @@ const handleSubmitChange = async () => {
       phoneNumber: phone.value,
     });
     console.log(data);
-    alert('注册成功');
+    ElMessage.success('注册成功');
     router.push('/home');
   } catch (error) {
     console.log(error);
-    alert('注册数据有误');
+    ElMessage.error('注册数据有误');
   }
 };
 </script>

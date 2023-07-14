@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 
 let ws: WebSocket;
@@ -7,22 +8,22 @@ const clientId = ref(0);
 const messageContent = ref('');
 
 function connect(event: MouseEvent) {
-  alert('开始连接');
+  ElMessage.info('开始连接');
   ws = new WebSocket('ws://101.132.165.23:8000/ws/' + clientId.value);
   ws.onclose = function (event) {
     if (event.wasClean) {
-      alert(
+      ElMessage.info(
         `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`,
       );
     } else {
       // 例如服务器进程被杀死或网络中断
       // 在这种情况下，event.code 通常为 1006
-      alert('[close] Connection died');
+      ElMessage.info('[close] Connection died');
     }
   };
 
-  ws.onerror = function (error) {
-    alert(`[error] ${error}`);
+  ws.onerror = (error) => {
+    ElMessage.error(`${error}`);
   };
 
   ws.onmessage = function (event) {

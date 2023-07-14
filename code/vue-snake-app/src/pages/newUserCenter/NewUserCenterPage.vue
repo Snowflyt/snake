@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 
 import { apis } from '@/utils/apis';
@@ -21,10 +22,10 @@ const handleSubmitChange = async () => {
         : {}),
     });
     console.log(data);
-    alert('修改成功');
+    ElMessage.success('修改成功');
   } catch (error) {
     console.log(error);
-    alert('修改数据有误');
+    ElMessage.error('修改数据有误');
   }
 };
 </script>
