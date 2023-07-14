@@ -508,8 +508,9 @@ def update_game(game: Game) -> None:
             game.board.foods += [Food(point=point, color=snake.color)
                                  for point in snake.body_points]
             game.snakes.remove(snake)
-            game.generate_snake(color=snake.color, player=snake.player)
-            snake.player.score //= 2
+            new_snake = game.generate_snake(color=snake.color, player=snake.player)
+            new_snake.update_code(snake.code)
+            new_snake.player.score //= 2
 
         # 吃食物
         if snake.next_head in map(lambda food: food.point, game.board.foods):
