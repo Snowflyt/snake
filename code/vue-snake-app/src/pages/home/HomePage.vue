@@ -2,28 +2,35 @@
   <div class="mx-auto w-4/5">
     <div class="mb-16 flex justify-between">
       <div class="flex w-44 justify-around">
-        <img
-          class=""
-          src="@/assets/images/主页/u38.svg"
-          style="cursor: hand"
-          @click="$router.push('/shop')" />商城
-        <img
-          class=""
-          src="@/assets/images/主页/u39.svg"
-          style="cursor: hand"
-          @click="$router.push('/chat')" />论坛
+        <div class="flex flex-row space-x-2 hover:cursor-pointer">
+          <img
+            src="@/assets/images/主页/u38.svg"
+            @click="$router.push('/shop')" />
+          <span>商城</span>
+        </div>
+        <div class="flex flex-row space-x-2 hover:cursor-pointer">
+          <img
+            class="hover:cursor-pointer"
+            src="@/assets/images/主页/u39.svg"
+            @click="$router.push('/chat')" />
+          <span>论坛</span>
+        </div>
       </div>
       <div class="flex w-44 justify-around">
-        <img
-          class=""
-          src="@/assets/images/主页/u34.svg"
-          style="cursor: hand"
-          @click="$router.push('/user-center')" />用户
-        <img
-          class=""
-          src="@/assets/images/主页/u35.svg"
-          style="cursor: hand"
-          @click="$router.push('/settings')" />设置
+        <div class="flex flex-row space-x-2 hover:cursor-pointer">
+          <img
+            class="hover:cursor-pointer"
+            src="@/assets/images/主页/u34.svg"
+            @click="$router.push('/user-center')" />
+          <span>用户</span>
+        </div>
+        <div class="flex flex-row space-x-2 hover:cursor-pointer">
+          <img
+            class="hover:cursor-pointer"
+            src="@/assets/images/主页/u35.svg"
+            @click="$router.push('/settings')" />
+          <span>设置</span>
+        </div>
       </div>
     </div>
 
