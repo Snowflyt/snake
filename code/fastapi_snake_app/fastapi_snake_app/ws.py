@@ -462,7 +462,7 @@ def end_game(room_id: str, player_id: str) -> None:
 
 
 class UpdateCodePayload(TypedDict):
-    player_id: int
+    player_id: str
     code: str
 
 
@@ -483,7 +483,11 @@ class UpdateGameMessage(TypedDict):
     payload: UpdateGamePayload
 
 
-OutgoingMessage: TypeAlias = UpdateGameMessage
+class CodeUpdateConfirmMessage(TypedDict):
+    type: Literal['code-update-confirm']
+
+
+OutgoingMessage: TypeAlias = UpdateGameMessage | CodeUpdateConfirmMessage
 
 
 async def update_code(room_id: str, payload: UpdateCodePayload) -> None:
@@ -508,7 +512,8 @@ def update_game(game: Game) -> None:
             game.board.foods += [Food(point=point, color=snake.color)
                                  for point in snake.body_points]
             game.snakes.remove(snake)
-            new_snake = game.generate_snake(color=snake.color, player=snake.player)
+            new_snake = game.generate_snake(
+                color=snake.color, player=snake.player)
             new_snake.update_code(snake.code)
             new_snake.player.score //= 2
 
@@ -546,7 +551,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
             msg: IncomingMessage = await websocket.receive_json()
             if msg:
                 if msg['type'] == 'update-code':
-                    await update_code(room_id=room_id, payload=msg['payload'])
+                    payload = msg['payload']
+                    await update_code(room_id=room_id, payload=payload)
+                    await websocket.send_json(CodeUpdateConfirmMessage(type='code-update-confirm'))
 
     receiver_task = asyncio.create_task(receive_handle())
 
