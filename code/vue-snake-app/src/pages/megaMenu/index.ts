@@ -1,3 +1,3 @@
-import megaMenu from './megaMenu.vue';
+import MegaMenuPage from './MegaMenuPage.vue';
 
-export default megaMenu;
+export default MegaMenuPage;

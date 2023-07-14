@@ -24,7 +24,7 @@ const handleSubmitChange = async () => {
     });
     console.log(data);
     alert('注册成功');
-    router.push('/');
+    router.push('/home');
   } catch (error) {
     console.log(error);
     alert('注册数据有误');

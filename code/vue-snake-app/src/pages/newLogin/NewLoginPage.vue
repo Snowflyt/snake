@@ -17,7 +17,7 @@ const handleSubmitChange = async () => {
     });
     console.log(response);
     alert('登录成功');
-    router.push('/');
+    router.push('/home');
   } catch (error) {
     console.log(error);
     alert('登录数据有误');

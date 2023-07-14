@@ -19,7 +19,7 @@ const handleSubmitChange = async () => {
     });
     console.log(response);
     alert('登录成功');
-    router.push('/');
+    router.push('/home');
   } catch (error) {
     console.log(error);
     alert('登录数据有误');
@@ -78,7 +78,7 @@ const handleSubmitChange = async () => {
                 class="rounded border-2 border-black p-2 text-3xl font-bold"
                 type="button"
                 round
-                @click="$router.push('/')">
+                @click="$router.push('/home')">
                 登录
               </button>
               <button
@@ -97,7 +97,7 @@ const handleSubmitChange = async () => {
           <img class="inline w-[50%]" src="../../assets/tdimensioncode.png" />
           <button
             class="absolute inline h-[50%] rounded border-2 border-black p-2 text-3xl font-bold"
-            @click="$router.push('/')">
+            @click="$router.push('/home')">
             登录
           </button>
           <button

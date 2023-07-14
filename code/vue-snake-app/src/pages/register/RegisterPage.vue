@@ -20,7 +20,7 @@ const password = ref('');
     <div class="flex justify-center">
       <button
         class="w-32 rounded-md bg-black p-4 text-white"
-        @click="$router.push('/')">
+        @click="$router.push('/home')">
         注册
       </button>
     </div>

@@ -7,6 +7,7 @@ import GamePage from '@/pages/game';
 import HomePage from '@/pages/home';
 import LeisurePage from '@/pages/leisure';
 import LoginPage from '@/pages/login';
+import MegaMenuPage from '@/pages/megaMenu';
 import NewChatPage from '@/pages/newChat';
 import NewChatContentPage from '@/pages/newChatContent';
 import NewLoginPage from '@/pages/newLogin';
@@ -20,7 +21,8 @@ import UserCenterPage from '@/pages/userCenter';
 import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', component: HomePage },
+  { path: '/', component: MegaMenuPage },
+  { path: '/home', component: HomePage },
   { path: '/register', component: RegisterPage },
   { path: '/login', component: LoginPage },
   { path: '/combat', component: CombatPage },
