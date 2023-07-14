@@ -217,7 +217,7 @@ class Snake:
     def code(self) -> str:
         return self._code
 
-    def update_code(self, code: str) -> None:
+    def update_code(self, code: str) -> bool:
         try:
             step_func = self.__parse_step_func(code)
             action = step_func(snake=self.to_info(),
@@ -229,8 +229,9 @@ class Snake:
             print(
                 f'Player(id="{self.player.id}", name="{self.player.name}"): Code updated')
             print(self._code)
+            return True
         except Exception:
-            return
+            return False
 
     @property
     def player(self) -> Player:
@@ -490,14 +491,15 @@ class CodeUpdateConfirmMessage(TypedDict):
 OutgoingMessage: TypeAlias = UpdateGameMessage | CodeUpdateConfirmMessage
 
 
-async def update_code(room_id: str, payload: UpdateCodePayload) -> None:
+async def update_code(room_id: str, payload: UpdateCodePayload) -> bool:
     player_id, code = payload['player_id'], payload['code']
 
     game = games[room_id]
     for snake in game.snakes:
         if snake.player.id == player_id:
-            snake.update_code(code)
-            break
+            return snake.update_code(code)
+
+    return False
 
 
 def update_game(game: Game) -> None:
@@ -552,8 +554,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str) -> None:
             if msg:
                 if msg['type'] == 'update-code':
                     payload = msg['payload']
-                    await update_code(room_id=room_id, payload=payload)
-                    await websocket.send_json(CodeUpdateConfirmMessage(type='code-update-confirm'))
+                    if await update_code(room_id=room_id, payload=payload):
+                        await websocket.send_json(
+                            CodeUpdateConfirmMessage(type='code-update-confirm'))
 
     receiver_task = asyncio.create_task(receive_handle())
 

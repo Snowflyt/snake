@@ -96,6 +96,7 @@
       import { getLuminance, toHex, rgba } from "color2k";
       import { createApp } from "vue";
       import ElementPlus from "element-plus";
+      import { ElMessage } from "element-plus";
       import { python } from "@codemirror/lang-python";
       import { Codemirror } from "vue-codemirror";
 
@@ -349,6 +350,12 @@ def step(snake, other_snakes, board):
                 this.player.score = payload.game.players.find(
                   (player) => player.id === this.player.id
                 ).score;
+                return;
+              }
+
+              if (type === 'code-update-confirm') {
+                ElMessage.success('代码已更新');
+                return;
               }
             };
             ws.onopen = () => {
