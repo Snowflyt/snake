@@ -203,24 +203,20 @@ const handleUpdateCode = (code: string) => {
 
 <template>
   <div class="flex h-screen flex-col space-y-1 p-8">
-    <div class="w-100 flex flex-row justify-between">
+    <div class="w-100 mb-4 flex flex-row justify-between">
       <img
         id="u226_img"
-        class="inline h-[80%]"
-        src="../../assets/images/对战/u226.svg" />
-
+        class="inline h-8 hover:cursor-pointer"
+        src="@/assets/images/对战/u226.svg"
+        @click="$router.go(-1)" />
       <img
         id="u227_img"
-        class="inline"
-        src="../../assets/images/对战/u227.svg" />
+        class="inline h-8 hover:cursor-pointer"
+        src="@/assets/images/对战/u227.svg"
+        @click="$router.push('/settings')" />
     </div>
-    <div class="w-100 flex flex-row justify-between">
-      <button class="text-2xl font-bold" @click="$router.go(-1)">返回</button>
-      <button class="text-2xl font-bold" @click="$router.push('/settings')">
-        设置
-      </button>
-    </div>
-    <div class="mb-6 flex flex-row">
+
+    <div class="mb-8 flex flex-row">
       <h1 class="grow text-3xl">Code Snake</h1>
       <span class="text-gray-500"
         >你好，<span :style="{ color: snakeColor }">{{
