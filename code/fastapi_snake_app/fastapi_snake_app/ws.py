@@ -307,13 +307,16 @@ class Snake:
     def next_body_points(self) -> list[Point]:
         return [self.next_head] + self._body_points[:-1]
 
-    def forward(self, other_snakes: list['Snake']) -> None:
+    def get_next_action(self, other_snakes: list['Snake']) \
+            -> Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT']:
         step_func = self.__parse_step_func(self._code)
-
-        action: Literal['TURN_LEFT', 'TURN_RIGHT', 'KEEP_STRAIGHT'] = step_func(
+        return step_func(
             snake=self.to_info(),
             other_snakes=[snake.to_info() for snake in other_snakes],
             board=self._board.to_info())
+
+    def forward(self, other_snakes: list['Snake']) -> None:
+        action = self.get_next_action(other_snakes=other_snakes)
 
         if action == 'TURN_LEFT':
             self._turn_left()
@@ -499,8 +502,9 @@ def update_game(game: Game) -> None:
                         if other_snake != snake]
 
         # 碰撞检测
-        if (snake.would_hit_itself() or snake.would_hit_wall() or
-                any(snake.would_hit(other_snake) for other_snake in other_snakes)):
+        if ((snake.would_hit_itself() or snake.would_hit_wall() or
+                any(snake.would_hit(other_snake) for other_snake in other_snakes)) and
+                snake.get_next_action(other_snakes=other_snakes) == 'KEEP_STRAIGHT'):
             game.board.foods += [Food(point=point, color=snake.color)
                                  for point in snake.body_points]
             game.snakes.remove(snake)
